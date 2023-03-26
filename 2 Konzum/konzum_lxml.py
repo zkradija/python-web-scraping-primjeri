@@ -8,7 +8,7 @@ import time
 # zadatak: sa intrnet stranice https://Konzum.hr skinuti sve proizvode s pripadajućim cijenama
 # cijene ćemo preuzeti sa stranice kategorija, gdje su navedeni proizvodi pojedine kategorije. ne treba otvarati stranicu pojedinačnog proizvoda
 # usporediti ćemo 2 načina parsiranja: lxml i html.parse
-# html --> prosječno vrijeme xy sekundi
+# html --> prosječno vrijeme 290 sekundi
 
 #identificiram se kao Firefox browser
 headers = {
@@ -98,7 +98,7 @@ for k in kategorija:
 #ubacujem nazive stupaca, radi prebacivanja u Excel
 data.insert(0, ['poveznica','kategorija','sifra','naziv','cijena_EUR_kom'])
 
-with xlsxwriter.Workbook('Konzum_html.xlsx') as workbook:
+with xlsxwriter.Workbook('Konzum_lxml.xlsx') as workbook:
     worksheet = workbook.add_worksheet()
     for row_num, data in enumerate(data):
         worksheet.write_row(row_num, 0, data)
@@ -106,4 +106,3 @@ with xlsxwriter.Workbook('Konzum_html.xlsx') as workbook:
 kraj_vrijeme = time.time()
 ukupno_vrijeme=kraj_vrijeme-pocetak_vrijeme
 print(ukupno_vrijeme)
-

@@ -5,7 +5,7 @@ import time
 from concurrent.futures import ProcessPoolExecutor, as_completed
 
 # NIJE GOTOVO - A KAKO STVARI STOJE NITI NEĆE
-# KORIŠTENJEM VIŠENITNOG NAČINA RADA PREBRZO SE ŠALJU UPITI NA SERVER PA SE SERVER JAVLJA:
+# KORIŠTENJEM VIŠENITNOG NAČINA RADA PREBRZO SE ŠALJU UPITI NA SERVER PA SERVER JAVLJA:
 # Request blocked. We can't connect to the server for this app or website at this time. There might be too much traffic or a configuration error. Try again later, or contact the app or website owner.
 # If you provide content to customers through CloudFront, you can find steps to troubleshoot and help prevent this error by reviewing the CloudFront documentation.
 #
