@@ -1,4 +1,4 @@
-Primjeri za vježbu web scrapinga, pomoću Pythona
+Primjeri za vježbu web scrapinga - pomoću Pythona.
 
 Primjeri su poredani po težini:
 - mjesta i poštanski brojevi sa stranice Posta.hr
