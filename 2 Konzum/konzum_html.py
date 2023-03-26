@@ -4,7 +4,7 @@ import xlsxwriter
 import time
 
 
-# zadatak: sa intrnet stranice https://Konzum.hr skinuti sve proizvode s pripadajućim cijenama
+# zadatak: sa intrnet stranice https://Konzum.hr skinuti sve proizvode s pripadajućim cijenama (cca 6.100 proizvoda)
 # cijene ćemo preuzeti sa stranice kategorija, gdje su navedeni proizvodi pojedine kategorije. ne treba otvarati stranicu pojedinačnog proizvoda
 # koristim html pasrser jer lxml nije ništa brži
 # prosječno vrijeme rada 220 sekundi

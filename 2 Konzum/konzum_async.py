@@ -84,7 +84,7 @@ URLs = kategorija
 
 def parse(url):
     time.sleep(1) #moram ubaciti da se na serveru ne bi uključila zaštita za DDoS napad
-    response = requests.get(url[0], headers=headers)
+    response = s.get(url[0], headers=headers)
     web_page = response.content
     only_article_tags=SoupStrainer('article')   #gledam samo article, radi ubrzanja
     soup = BeautifulSoup(web_page, 'html.parser', parse_only=only_article_tags)
