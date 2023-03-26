@@ -59,6 +59,8 @@ for ul in soup.find_all('ul', {'class' : 'nav-child-wrap-level-3'}):
             kat3.append (str(li.a.get_text()).strip())
             kategorija.append(kat3)
 
+#sortiram prije brisanja nadkategorija
+kategorija.sort()
 
 #čistim kategorije od glavnih kategorija. zanimaju me samo najniži nivoi
 i=0
@@ -75,6 +77,8 @@ while br>0:
 
 print('Kategorije pronađene: ' + time.strftime('%H:%M:%S') + ' h')
 
+
+
 #brojac koristim radi izračuna brzine
 brojac=1
 #krećem listanje proizvoda po kategorijama
@@ -84,10 +88,11 @@ print('Proizvod broj ' + str(brojac) + ' u ' + str(time.strftime("%H:%M:%S", t))
 URLs = kategorija
 
 def parse(url):
-    response = requests.get(url[0], headers=headers)
+    response = requests.get(url, headers=headers)
     web_page = response.content
     only_article_tags=SoupStrainer('article')   #gledam samo article, radi ubrzanja
     soup = BeautifulSoup(web_page, 'html.parser', parse_only=only_article_tags)
+    proizvodi = []
     for article in soup.find_all('article'):
         proizvod = []
         if article is not None: 
@@ -96,24 +101,28 @@ def parse(url):
             proizvod.append (str(article.div.attrs['data-ga-id']))
             proizvod.append (str(article.div.attrs['data-ga-name']))
             proizvod.append (float(article.div.attrs['data-ga-price'].replace(" €","").replace(",",".")))    #prvo mičem oznaku €, zatim pretvaram decimalni zarez u točku, da bi na kraju pretvorio u broj
-            return proizvod
+            proizvodi.append(proizvod)
+    time.sleep(2)
+    return proizvodi
+
+            
 
     
 if __name__ == '__main__':
     with ProcessPoolExecutor(max_workers=12) as executor:
         futures = [ executor.submit(parse, url) for url in URLs ]
         for result in as_completed(futures):
+            data.extend(result.result())
             brojac+=1
-            #ispisujem svaki 500ti da vidim brzinu            
             if brojac %500 == 0: 
-                t = time.localtime()
                 print('Proizvod broj ' + str(brojac) + ' u ' + str(time.strftime("%H:%M:%S", t)))
-            data.append(result)
+            #ispisujem svaki 500ti da vidim brzinu            
 
 
-    # #ubacujem nazive stupaca, radi prebacivanja u Excel
+
+        # #ubacujem nazive stupaca, radi prebacivanja u Excel
     data.insert(0, ['poveznica','kategorija','sifra','naziv','cijena_EUR_kom'])
-
+    print(data)
     with xlsxwriter.Workbook('Konzum_html_async.xlsx') as workbook:
         worksheet = workbook.add_worksheet()
         for row_num, data in enumerate(data):
