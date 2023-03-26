@@ -4,13 +4,12 @@ import xlsxwriter
 import time
 
 
-
 # zadatak: sa intrnet stranice https://Konzum.hr skinuti sve proizvode s pripadajućim cijenama
 # cijene ćemo preuzeti sa stranice kategorija, gdje su navedeni proizvodi pojedine kategorije. ne treba otvarati stranicu pojedinačnog proizvoda
-# usporediti ćemo 2 načina parsiranja: lxml i html.parse
-# html --> prosječno vrijeme xy sekundi
+# koristim html pasrser jer lxml nije ništa brži
+# prosječno vrijeme rada 220 sekundi
 
-#identificiram se kao Firefox browser
+# identificiram se kao Firefox browser
 headers = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:66.0) Gecko/20100101 Firefox/66.0",
     "Accept-Encoding": "*",
@@ -54,10 +53,7 @@ for ul in soup.find_all('ul', {'class' : 'nav-child-wrap-level-3'}):
             kat3.append('3')
             kategorija.append(kat3)
 
-
-
-
-print (kategorija)
+# sortiram - priprema za brisanje nadkategorija
 kategorija.sort(key=lambda x: x[0])
 
 
@@ -75,10 +71,6 @@ while br>0:
         i+=1
     br-=1
 
-# with xlsxwriter.Workbook('Konzum_html_sort_poslije.xlsx') as workbook:
-#     worksheet = workbook.add_worksheet()
-#     for row_num, kategorija in enumerate(kategorija):
-#         worksheet.write_row(row_num, 0, kategorija)
 
 print('Kategorije pronađene: ' + time.strftime('%H:%M:%S') + ' h')
 
