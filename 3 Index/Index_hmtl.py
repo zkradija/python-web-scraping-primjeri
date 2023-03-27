@@ -1,4 +1,5 @@
 from datetime import datetime
+import time
 import xlsxwriter
 from bs4 import BeautifulSoup
 import requests
@@ -19,8 +20,11 @@ headers = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:66.0) Gecko/20100101 Firefox/66.0",
     "Accept-Encoding": "*",
     "Connection": "keep-alive"}
-response = requests.get("https://www.index.hr/oglasi/auto-moto/gid/27?&elementsNum=100&sortby=1&num=1",headers=headers)
-web_page = response.text
+pocetak_vrijeme = time.time()
+s = requests.Session()
+
+response = s.get("https://www.index.hr/oglasi/auto-moto/gid/27?&elementsNum=100&sortby=1&num=1",headers=headers)
+web_page = response.content
 soup = BeautifulSoup(web_page, "html.parser")
 
 for li in soup.find("ul", {'class': 'pagination'}).find_all("li"):
@@ -36,12 +40,9 @@ print('Zadnja stranica pronađena: ' + str(last_page) + ' --> ' + datetime.now()
 
 
 for i in range (1,last_page+1):
-    headers = {
-    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:66.0) Gecko/20100101 Firefox/66.0",
-    "Accept-Encoding": "*",
-    "Connection": "keep-alive"}
-    response = requests.get("https://www.index.hr/oglasi/auto-moto/gid/27?&elementsNum=100&sortby=1&num=" + str(i), headers=headers)
-    web_page = response.text
+
+    response = s.get("https://www.index.hr/oglasi/auto-moto/gid/27?&elementsNum=100&sortby=1&num=" + str(i), headers=headers)
+    web_page = response.content
     soup = BeautifulSoup(web_page, "html.parser")
     for div in soup.find_all('div', {'class': 'OglasiRezHolder'}):
         if div.find('a', {'class': 'result'}) is not None :
@@ -60,12 +61,9 @@ print('Zaglavlja oglasa napunjena: ' + datetime.now().strftime("%H:%M:%S") + ' h
 
 #kreće otvaranje oglasa 1 po 1
 for i in range (0,len(links)):
-    headers = {
-    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:66.0) Gecko/20100101 Firefox/66.0",
-    "Accept-Encoding": "*",
-    "Connection": "keep-alive"}
-    response = requests.get(links[i], headers=headers)
-    web_page = response.text
+
+    response = s.get(links[i], headers=headers)
+    web_page = response.content
     soup = BeautifulSoup(web_page, "html.parser")
     oglas_det = ['','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','']   
     oglas_det[0] = (str(links[i]))
@@ -150,7 +148,7 @@ for i in range (0,len(links)):
 
 
 #upisujem podatke u Excel
-with xlsxwriter.Workbook('Index_auti_html.xlsx') as workbook:
+with xlsxwriter.Workbook('Index_auti.xlsx') as workbook:
        
     #kreiram list za pojedinačne oglase
     worksheet = workbook.add_worksheet('oglas_det')
@@ -192,3 +190,7 @@ with xlsxwriter.Workbook('Index_auti_html.xlsx') as workbook:
 
     for row_num, data_det in enumerate(data_det):
         worksheet.write_row(row_num+1, 0, data_det)
+
+kraj_vrijeme = time.time()
+ukupno_vrijeme=kraj_vrijeme-pocetak_vrijeme
+print( str(ukupno_vrijeme) + ' sekundi' )
