@@ -8,11 +8,13 @@ from concurrent.futures import ProcessPoolExecutor, as_completed
 # zadatak: sa internet stranice https://Index.hr skinuti sve oglase za automobile (cca 28.000 oglasa)
 # filtrirat ćemo oglase - zanimaju nas samo oni oglasi koji imaju popunjena sva željena polja
 # cca 5-10x brže radi nego verzija bez ProcessPoolExecutor. može i brže, ali onda se aktivira DDoS zaštita na serveru. zato usporavam sa time.sleep(1)
-# workers = 12 --> odradi za cca 70 min
-# workers = 24 --> odradi za cca 35 min
+# workers = 12 / time_sleep = 1.0 sec --> odradi za cca 70 min
+# workers = 24 / time_sleep = 1.0 sec --> odradi za cca 35 min
+# workers = 30 / time_sleep = 0.5 sec --> odradi za cca 26 min
  
 
 workers = 24    # obično se stavlja broj logičkih procesora. napomena: The number of workers must be less than or equal to 61 if Windows is your operating system.
+time_sleep = 1
 data_gla = {}   # zaglavlje oglasa - treba mi šifra i županija, koju kasnije spajam s pojedinačnim oglasom, koristim dictionary radi lakšeg pozivanja županije preko šifre
 data_det = []   # pojedičnačni oglasi; ne sadržavaju županiju
 last_page = 1
@@ -45,7 +47,7 @@ for i in range (0, last_page+1):
     URLs.append('https://www.index.hr/oglasi/auto-moto/gid/27?&elementsNum=100&sortby=1&num=' + str(i))
 
 def parse(url):
-    time.sleep(1)
+    time.sleep(time_sleep)
     response = s.get(url, headers=headers)
     web_page = response.text
     soup = BeautifulSoup(web_page, "html.parser")
@@ -69,7 +71,7 @@ def parse(url):
 
 def parse_oglas(url):
     #kreće otvaranje oglasa 1 po 1
-    time.sleep(1)
+    time.sleep(time_sleep)
     response = s.get(url, headers=headers)
     web_page = response.content
     soup = BeautifulSoup(web_page, "html.parser")
@@ -102,7 +104,7 @@ def parse_oglas(url):
             match str(li.get_text()):
                 case 'Marka:':
                     oglas_det[10] = str(li.find_next_sibling('li').get_text()).replace('\r','').replace('\n','')
-                case 'Model':
+                case 'Model:':
                     oglas_det[11] = str(li.find_next_sibling('li').get_text()).replace('\r','').replace('\n','')
                 case 'Tip:':
                     oglas_det[12] = str(li.find_next_sibling('li').get_text()).replace('\r','').replace('\n','')
