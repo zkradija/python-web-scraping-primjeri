@@ -7,10 +7,12 @@ from concurrent.futures import ProcessPoolExecutor, as_completed
 
 # zadatak: sa internet stranice https://Index.hr skinuti sve oglase za automobile (cca 28.000 oglasa)
 # filtrirat ćemo oglase - zanimaju nas samo oni oglasi koji imaju popunjena sva željena polja
-# cca 5x brže radi nego verzija bez ProcessPoolExecutor. može i brže, ali onda se aktivira DDoS zaštita na serveru. zato usporavam sa time.sleep(1)
+# cca 5-10x brže radi nego verzija bez ProcessPoolExecutor. može i brže, ali onda se aktivira DDoS zaštita na serveru. zato usporavam sa time.sleep(1)
+# workers = 12 --> odradi za cca 70 min
+# workers = 24 --> odradi za cca 35 min
+ 
 
-
-workers = 12    # obično se stavlja broj logičkih procesora. napomena: The number of workers must be less than or equal to 61 if Windows is your operating system.
+workers = 24    # obično se stavlja broj logičkih procesora. napomena: The number of workers must be less than or equal to 61 if Windows is your operating system.
 data_gla = {}   # zaglavlje oglasa - treba mi šifra i županija, koju kasnije spajam s pojedinačnim oglasom, koristim dictionary radi lakšeg pozivanja županije preko šifre
 data_det = []   # pojedičnačni oglasi; ne sadržavaju županiju
 last_page = 1
@@ -219,4 +221,4 @@ if __name__ == '__main__':
     
     kraj_vrijeme = time.time()
     ukupno_vrijeme=kraj_vrijeme-pocetak_vrijeme
-    print(ukupno_vrijeme)
+    print(str(ukupno_vrijeme) + ' sekundi')
