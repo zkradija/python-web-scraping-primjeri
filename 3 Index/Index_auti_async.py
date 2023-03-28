@@ -10,7 +10,7 @@ from concurrent.futures import ProcessPoolExecutor, as_completed
 # ubacujem async da ubrzam stvari
 
 
-
+workers = 12    # 12 niti
 data_gla = {}   # zaglavlje oglasa - treba mi šifra i županija, koju kasnije spajam s pojedinačnim oglasom, koristim dictionary radi lakšeg pozivanja županije preko šifre
 data_det = []   # pojedičnačni oglasi; ne sadržavaju županiju
 last_page = 1
@@ -156,7 +156,7 @@ if __name__ == '__main__':
     URLs2 = []
     print('Zadnja stranica pronađena: ' + str(last_page) + ' --> ' + datetime.now().strftime("%H:%M:%S") + ' h')
     # prvo parsiram url stranice na kojoj je popis sa po 100 oglasa
-    with ProcessPoolExecutor(max_workers=12) as executor:
+    with ProcessPoolExecutor(max_workers=workers) as executor:
         futures = [ executor.submit(parse, url) for url in URLs ]
         for result in as_completed(futures):
             for sifra in result.result():
@@ -166,7 +166,7 @@ if __name__ == '__main__':
 
     br_oglasa=1
     # sad parsiram stranicu pojedinačnog oglasa
-    with ProcessPoolExecutor(max_workers=12) as executor:
+    with ProcessPoolExecutor(max_workers=workers) as executor:
         futures = [ executor.submit(parse_oglas, url) for url in URLs2]
         for result in as_completed(futures):
             for r in result.result():
