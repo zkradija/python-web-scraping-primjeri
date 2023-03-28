@@ -5,24 +5,24 @@ from bs4 import BeautifulSoup
 import requests
 from concurrent.futures import ProcessPoolExecutor, as_completed
 
-# zadatak: sa intrnet stranice https://Index.hr skinuti sve oglase za automobile (cca 28.000 oglasa)
+# zadatak: sa internet stranice https://Index.hr skinuti sve oglase za automobile (cca 28.000 oglasa)
 # filtrirat ćemo oglase - zanimaju nas samo oni oglasi koji imaju popunjena sva željena polja
-# ubacujem async da ubrzam stvari
+# cca 5x brže radi nego verzija bez ProcessPoolExecutor. može i brže, ali onda se aktivira DDoS zaštita na serveru. zato usporavam sa time.sleep(1)
 
 
-workers = 12    # 12 niti
+workers = 12    # obično se stavlja broj logičkih procesora. napomena: The number of workers must be less than or equal to 61 if Windows is your operating system.
 data_gla = {}   # zaglavlje oglasa - treba mi šifra i županija, koju kasnije spajam s pojedinačnim oglasom, koristim dictionary radi lakšeg pozivanja županije preko šifre
 data_det = []   # pojedičnačni oglasi; ne sadržavaju županiju
 last_page = 1
 
-#otvaram prvu stranicu da bi pronašao last_page
+# identificiram se kao Firefox browser
 headers = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:66.0) Gecko/20100101 Firefox/111.0.1",
     "Accept-Encoding": "*",
     "Connection": "keep-alive"}
 
+pocetak_vrijeme = time.time()
 s = requests.Session()
-
 
 response = s.get('https://www.index.hr/oglasi/auto-moto/gid/27?&elementsNum=100&sortby=1&num=1',headers=headers)
 web_page = response.content
@@ -217,3 +217,7 @@ if __name__ == '__main__':
 
         for row_num, data_det in enumerate(data_det):
             worksheet.write_row(row_num+1, 0, data_det)
+    
+    kraj_vrijeme = time.time()
+    ukupno_vrijeme=kraj_vrijeme-pocetak_vrijeme
+    print(ukupno_vrijeme)
