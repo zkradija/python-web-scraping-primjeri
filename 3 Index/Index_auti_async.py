@@ -169,8 +169,7 @@ if __name__ == '__main__':
     with ProcessPoolExecutor(max_workers=workers) as executor:
         futures = [ executor.submit(parse_oglas, url) for url in URLs2]
         for result in as_completed(futures):
-            for r in result.result():
-                data_det.append(r)
+            data_det.append(result.result())
             if br_oglasa == 1 or br_oglasa % 500 == 0: print('Oglas broj: ' + str(br_oglasa) + ' / ' + str(len(URLs2)) + ' --> ' + datetime.now().strftime("%H:%M") + ' h')
             br_oglasa += 1
 
