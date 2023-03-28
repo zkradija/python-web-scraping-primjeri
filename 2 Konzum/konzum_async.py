@@ -11,6 +11,8 @@ from concurrent.futures import ProcessPoolExecutor, as_completed
 
 
 workers = 12    # obično se stavlja broj logičkih procesora. napomena: The number of workers must be less than or equal to 61 if Windows is your operating system.
+time_sleep = 1
+
 # identificiram se kao Firefox browser
 headers = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:66.0) Gecko/20100101 Firefox/111.0.1",
@@ -84,7 +86,7 @@ brojac=1
 URLs = kategorija
 
 def parse(url):
-    time.sleep(1) #moram ubaciti da se na serveru ne bi uključila zaštita za DDoS napad
+    time.sleep(time_sleep) #moram ubaciti da se na serveru ne bi uključila zaštita za DDoS napad
     response = s.get(url[0], headers=headers)
     web_page = response.content
     only_article_tags=SoupStrainer('article')   #gledam samo article, radi ubrzanja
