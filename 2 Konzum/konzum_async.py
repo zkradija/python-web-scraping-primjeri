@@ -10,6 +10,7 @@ from concurrent.futures import ProcessPoolExecutor, as_completed
 # cca 5x brže radi nego verzija bez ProcessPoolExecutor. može i brže, ali onda se aktivira DDoS zaštita na serveru
 
 
+workers = 12    # 12 niti
 # identificiram se kao Firefox browser
 headers = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:66.0) Gecko/20100101 Firefox/111.0.1",
@@ -103,7 +104,7 @@ def parse(url):
 
     
 if __name__ == '__main__':
-    with ProcessPoolExecutor(max_workers=12) as executor:
+    with ProcessPoolExecutor(max_workers=workers) as executor:
         futures = [ executor.submit(parse, url) for url in URLs ]
         for result in as_completed(futures):
             data.extend(result.result())
