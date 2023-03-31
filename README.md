@@ -7,3 +7,5 @@ Primjeri su poredani po težini:
 - cijene svih proizvoda sa stranice Konzum.hr
 - oglasi za automobile sa stranice Index.hr
 - artikli na popustu sa stranice Njuskalo
+
+Za više info: zkradija@proton.me
