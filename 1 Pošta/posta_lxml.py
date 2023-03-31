@@ -8,7 +8,7 @@ import time
 
 # zadatak: sa internet stranice https://Posta.hr skinuti sva mjesta, poštanske urede i županije
 # usporediti ćemo 2 načina parsiranja: lxml i html.parse
-# xmlx --> prosječno vrijeme 117 sekundi
+# lxml --> prosječno vrijeme 117 sekundi
 
 #identificiram se kao Firefox browser
 headers = {
