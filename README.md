@@ -1,4 +1,4 @@
-<<- CROATIAN LANGUAGE ONLY -->>
+<<-- CROATIAN LANGUAGE ONLY -->>
 
 Primjeri za vježbu web scrapinga - pomoću Pythona (Beautiful Soup + Selenium).
 
