@@ -6,7 +6,7 @@ from concurrent.futures import ProcessPoolExecutor, as_completed
 
 # zadatak: sa internet stranice https://Konzum.hr skinuti sve proizvode s pripadajućim cijenama
 # cijene ćemo preuzeti sa stranice kategorija, gdje su navedeni proizvodi pojedine kategorije. ne treba otvarati stranicu pojedinačnog proizvoda
-# sada koristim asinkroni način rada, točnije koristiti ću 12 niti (testno računlo ima Amd 3600 6 jezgri sa 12 niti)
+# sada koristim asinkroni način rada, točnije koristiti ću 12 radnika (testno računalo ima Amd 3600 6 jezgri sa 12 logičkih procesora)
 # cca 5x brže radi nego verzija bez ProcessPoolExecutor. može i brže, ali onda se aktivira DDoS zaštita na serveru. zato usporavam sa time.sleep(1)
 
 
