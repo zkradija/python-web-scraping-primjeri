@@ -6,7 +6,6 @@ import requests
 from concurrent.futures import ProcessPoolExecutor, as_completed
 from selenium import webdriver
 from selenium.webdriver.common.by import By
-from pprint import pprint
 
 # zadatak: sa internet stranice https://popusti.njuskalo.hr skinuti sve artikle koji su trenutno na akciji
 # s obzirom da su rezultati skriveni iza dugmeta Show more, radim import Seleniuma, radi klikanja spornog dugmeta.
