@@ -18,7 +18,7 @@ url = 'https://www.njuskalo.hr/rabljeni-auti?onlyFullPrice=1&price%5Bmin%5D=5000
 
 # identificiram se kao Chrome browser, jer ću njega kasnije koristiti za automatizaciju klikanja putem Seleniuma
 headers = {
-    "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.0.5112.79 Safari/537.36",
+    "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.5112.79 Safari/537.36",
     "Accept-Encoding": "*",
     "Connection": "keep-alive"}
 
@@ -45,7 +45,11 @@ except:
 
 # print(driver.find_element(By.XPATH, '/html/body/div[11]/div[3]/div[1]/main/form/div/div[1]/div[4]/div[7]').getText())
 
-
+try:
+    for li in soup.find_all('li', {'class': lambda x: x and x.startswith('EntityList-item EntityList-item--Regular EntityList-item--')}):
+        print(li)
+except:
+    pass
 
 # links = ['','']
 # for div in soup.find_all('div'): 
