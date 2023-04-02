@@ -19,7 +19,6 @@ headers = {
     "Accept-Encoding": "*",
     "Connection": "keep-alive"}
 
-data = []
 kategorija = []
 kategorija_dict = {}
 
