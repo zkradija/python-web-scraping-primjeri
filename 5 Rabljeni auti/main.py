@@ -1,4 +1,4 @@
-import njuskalo, index, neostar, chiriboo
+import index, neostar, chiriboo
 
 
 def oglasi():
@@ -7,5 +7,5 @@ def oglasi():
 if __name__ == '__main__':
     oglasi()
     index.oglasi()
-    neostar.oglasi()
-    chiriboo.oglasi()
+    #neostar.oglasi()
+    #chiriboo.oglasi()

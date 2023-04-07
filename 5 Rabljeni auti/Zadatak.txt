@@ -26,7 +26,7 @@ Konačni podaci u Excel datoteci - moraju biti ovim redom, da se kasnije mogu la
 7. motor (benzin,dizel,...)
 8. kilometraža
 9. godina proizvodnje / modela
-10. snaga motora (kWh)
+10. snaga motora (kW)
 11. boja 
 12. datum objave (ako nema, staviti trenutni datum)
 
