@@ -1,0 +1,34 @@
+Zadatak je povući podatke sa više internet oglasnika. Ideja je da svaki oglasnik ima svoj list u Excelu.
+Svaki oglasnik mora imati svoju .py skriptu, koja se poziva iz main.py
+
+Svaki oglas mora ispuniti sljedeće uvjete - auto:
+1. mora biti rabljen ( > 1 km)
+2. starosti 2013 - 2022
+3. ne smije biti slupan - neki oglasnici imaju to u filteru, a negdje filrirati cijenom
+4. mora biti unutar države
+5. oglas ne smije biti stariji od 6 mjeseci
+
+Popis oglasnika / platofrmi:
+1. Njuškalo
+2. Index
+3. Neostar
+4. Chiriboo
+
+
+Konačni podaci u Excel datoteci - moraju biti ovim redom, da se kasnije mogu lakše spojiti oglasnici, odnosno listovi u Excelu:
+1. oglasnik
+2. poveznica
+3. prodavač
+4. marka
+5. model
+6. tip (najčešće kubikaža)
+7. motor (benzin,dizel,...)
+8. kilometraža
+9. godina proizvodnje / modela
+10. snaga motora (kWh)
+11. boja 
+12. cijena
+13. datum objave (ako nema, staviti trenutni datum)
+
+Ako neki podatak nedostaje, npr boja, ostaviti prazno polje.
+
