@@ -1,5 +1,5 @@
-def some_func():
+def oglasi():
     print ('index')
 
 if __name__ == '__main__':
-    some_func()
+    oglasi()
