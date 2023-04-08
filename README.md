@@ -8,5 +8,6 @@ Primjeri su poredani po težini:
 - oglasi za automobile, sa stranice https://www.index.hr/oglasi
 - artikli na popustu, sa stranice https://popusti.njuskalo.hr
 - oglasi za rabljene električne automobile, sa stranice https://njuskalo.hr
-- oglasi za rabljene automobile, sa raznih oglasnika, portala, platofrmi...
+- oglasi za rabljene automobile, sa raznih oglasnika, portala, platformi...
+
 Za više info: zkradija@proton.me
