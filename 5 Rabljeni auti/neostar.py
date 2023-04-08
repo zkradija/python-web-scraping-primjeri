@@ -24,7 +24,7 @@ def parse(url):
     soup = BeautifulSoup(web_page, "html.parser")
     oglasi = []
     for div in soup.find_all('div', {'class': 'card-body p-0'}):
-        link = 'https://www.neostar.com/' + str(div.a['href']).strip()
+        link = 'https://www.neostar.com' + str(div.a['href']).strip()
         oglasi.append(link)
     return oglasi
 
