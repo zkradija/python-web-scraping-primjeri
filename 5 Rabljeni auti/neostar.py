@@ -5,6 +5,7 @@ from bs4 import BeautifulSoup
 import requests
 from concurrent.futures import ProcessPoolExecutor, as_completed
 from openpyxl import load_workbook
+import math
 
 # vrijeme izvođenja --> 6 min
 # nema datuma objave pa ću staviti trenutni datum
@@ -133,7 +134,7 @@ def oglasi():
    
     kraj_vrijeme = time.time()
     ukupno_vrijeme=kraj_vrijeme-pocetak_vrijeme
-    print(str(ukupno_vrijeme) + ' sekundi')
+    print('Neostar: ' + str(math.round(ukupno_vrijeme,0)) + ' sekundi')
 
 
 if __name__ == '__main__':

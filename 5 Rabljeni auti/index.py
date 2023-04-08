@@ -5,6 +5,7 @@ from bs4 import BeautifulSoup
 import requests
 from concurrent.futures import ProcessPoolExecutor, as_completed
 import openpyxl
+import math
 
 
 # vrijeme izvođenja --> 7 min
@@ -134,7 +135,7 @@ def oglasi():
    
     kraj_vrijeme = time.time()
     ukupno_vrijeme=kraj_vrijeme-pocetak_vrijeme
-    print(str(ukupno_vrijeme) + ' sekundi')
+    print('Index: ' + str(math.round(ukupno_vrijeme,0)) + ' sekundi')
 
 if __name__ == '__main__':
     oglasi()
