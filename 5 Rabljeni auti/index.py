@@ -135,7 +135,7 @@ def oglasi():
    
     kraj_vrijeme = time.time()
     ukupno_vrijeme=kraj_vrijeme-pocetak_vrijeme
-    print('Index: ' + str(math.round(ukupno_vrijeme,0)) + ' sekundi')
+    print('Index: ' + str(round(ukupno_vrijeme,0)) + ' sekundi')
 
 if __name__ == '__main__':
     oglasi()

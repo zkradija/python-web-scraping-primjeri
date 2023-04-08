@@ -134,7 +134,7 @@ def oglasi():
    
     kraj_vrijeme = time.time()
     ukupno_vrijeme=kraj_vrijeme-pocetak_vrijeme
-    print('Neostar: ' + str(math.round(ukupno_vrijeme,0)) + ' sekundi')
+    print('Neostar: ' + str(round(ukupno_vrijeme,0)) + ' sekundi')
 
 
 if __name__ == '__main__':
