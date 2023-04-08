@@ -7,8 +7,8 @@ import requests
 from concurrent.futures import ProcessPoolExecutor, as_completed
 
 
-# vrijeme izvođenja --> 8 min
-workers = 30    # obično se stavlja broj logičkih procesora. napomena: The number of workers must be less than or equal to 61 if Windows is your operating system.
+# vrijeme izvođenja --> 9 min
+workers = 24    # obično se stavlja broj logičkih procesora. napomena: The number of workers must be less than or equal to 61 if Windows is your operating system.
 time_sleep = 1
 
 
@@ -120,7 +120,7 @@ def oglasi():
                 oglasi.remove(ele)
 
     #upisujem podatke u Excel
-    with xlsxwriter.Workbook('Rabljeni_auti.xlsx') as workbook:
+    with xlsxwriter.Workbook('Rabljeni_auti_Index.xlsx') as workbook:
         worksheet = workbook.add_worksheet('Index')
 
         #dodajem zaglavlje
@@ -146,4 +146,5 @@ def oglasi():
     print(str(ukupno_vrijeme) + ' sekundi')
 
 if __name__ == '__main__':
+    print ('Index')
     oglasi()

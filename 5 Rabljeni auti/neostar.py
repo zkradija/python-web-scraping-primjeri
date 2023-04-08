@@ -1,17 +1,15 @@
 from datetime import date, datetime
-from dateutil.relativedelta import relativedelta
 import time
 import xlsxwriter
 from bs4 import BeautifulSoup
 import requests
 from concurrent.futures import ProcessPoolExecutor, as_completed
 
-
 # vrijeme izvođenja --> 9 min
 # nema datuma objave pa ću staviti trenutni datum
 
 
-workers = 24    # obično se stavlja broj logičkih procesora. napomena: The number of workers must be less than or equal to 61 if Windows is your operating system.
+workers = 30    # obično se stavlja broj logičkih procesora. napomena: The number of workers must be less than or equal to 61 if Windows is your operating system.
 time_sleep = 1
 
 
@@ -37,52 +35,51 @@ def parse_oglas(url):
     response = s.get(url, headers=headers)
     web_page = response.content
     soup = BeautifulSoup(web_page, "html.parser")
-    oglas_det = ['','','','','','','','','','','','','']   
+    oglas_det = ['','','','','','','','','','','','',''] 
     oglas_det[0] = 'Neostar'  # ime oglasnika
     oglas_det[1] = (str(url))   # poveznica
     oglas_det[2] = 'Neostar' # prodavač
     try: 
         if soup.find('span', {'class' : 'price secondaryPrice'}) is not None: oglas_det[11] = float(str(soup.find('span', {'class' : 'price secondaryPrice'}).get_text()).strip().replace(' €','').replace('.','').replace(',','.'))   #cijena 
-        oglas_det[12] = date.today()  # datum objave uvijek isti
+        oglas_det[12] = date.today().strftime('%d.%m.%Y')  # datum objave uvijek isti
     except:
         pass
-    try:
+    if soup.find('div', {'class' : 'vehicle-details-title pr-2'}) is not None:  # ovo stavljam za slučaj da neki oglas nestane u tijeku scrapanja
         if soup.find('div', {'class' : 'vehicle-details-title pr-2'}).getText()[:9] == 'Alfa Romeo':
             oglas_det[3] = 'Alfa Romeo'
             model_txt_start = 10
-            model_txt_end = int(soup.find('div', {'class' : 'vehicle-details-title pr-2'}).getText().strip().find(',')) - 1 
+            model_txt_end = int(soup.find('div', {'class' : 'vehicle-details-title pr-2'}).getText().strip().find(',')) - 2
             oglas_det[4] = soup.find('div', {'class' : 'vehicle-details-title pr-2'}).getText()[model_txt_start : model_txt_end]
         elif soup.find('div', {'class' : 'vehicle-details-title pr-2'}).getText()[:9] == 'Land Rover':
             oglas_det[3] = 'Land Rover'
             model_txt_start = 10
-            model_txt_end = int(soup.find('div', {'class' : 'vehicle-details-title pr-2'}).getText().strip().find(',')) - 1
+            model_txt_end = int(soup.find('div', {'class' : 'vehicle-details-title pr-2'}).getText().strip().find(',')) - 2
             oglas_det[4] = soup.find('div', {'class' : 'vehicle-details-title pr-2'}).getText()[model_txt_start : model_txt_end]
         else:
-            marka_txt_start = int(soup.find('div', {'class' : 'vehicle-details-title pr-2'}).getText().strip().find(' '))
-            marka_txt_end = int(len(soup.find('div', {'class' : 'vehicle-details-title pr-2'}).getText().strip()))
-            oglas_det[3] = soup.find('div', {'class' : 'vehicle-details-title pr-2'}).getText()[marka_txt_start : marka_txt_end]    # marka
+            marka_txt_start = 0
+            marka_txt_end = int(soup.find('div', {'class' : 'vehicle-details-title pr-2'}).getText().strip().find(' '))
+            oglas_det[3] = soup.find('div', {'class' : 'vehicle-details-title pr-2'}).getText().strip()[marka_txt_start : marka_txt_end]    # marka
             model_txt_start = int(soup.find('div', {'class' : 'vehicle-details-title pr-2'}).getText().strip().find(' ')) + 1 
-            model_txt_end = int(soup.find('div', {'class' : 'vehicle-details-title pr-2'}).getText().strip().find(',')) - 1 
-            oglas_det[4] = soup.find('div', {'class' : 'vehicle-details-title pr-2'}).getText()[model_txt_start : model_txt_end]    # model
-
+            model_txt_end = int(soup.find('div', {'class' : 'vehicle-details-title pr-2'}).getText().strip().find(',')) - 2 
+            oglas_det[4] = soup.find('div', {'class' : 'vehicle-details-title pr-2'}).getText().strip()[model_txt_start : model_txt_end]    # model
         # tip
         if soup.find('span', {'class' : 'text-center black-text vehicle-type'}) is not None: oglas_det[5] = soup.find('span', {'class' : 'text-center black-text vehicle-type'}).getText().strip()
 
-        for div in soup.find_all('span', {'class' : 'row my-3 p-2 vehicle-info-item'}):
-            match str(div.find('div', {'class' : 'col-6 d-inline-flex justify-content-start vehicle-info-title'})):
-                case 'VRSTA GORIVA':
-                    oglas_det[6] = str(div.find_next_sibling('div').get_text())
-                case 'KM':
-                    oglas_det[7] = str(div.find_next_sibling('div').get_text())
-                case 'GODIŠTE':
-                    oglas_det[8] = str(div.find_next_sibling('div').get_text())
-                case 'SNAGA MOTORA (KW)':
-                    oglas_det[9] = str(div.find_next_sibling('div').get_text())
-                case 'BOJA':
-                    oglas_det[10] = str(div.find_next_sibling('div').get_text())
+        for div in soup.find_all('div', {'class' : 'row my-3 p-2 vehicle-info-item'}):
+            if div.find('div', {'class' : 'col-6 d-inline-flex justify-content-start vehicle-info-title'}) is not None:
+                match div.find('div', {'class' : 'col-6 d-inline-flex justify-content-start vehicle-info-title'}).getText().strip():
+                    case 'Vrsta goriva':
+                        oglas_det[6] = str(div.find('div', {'class' : 'col-6 d-inline-flex justify-content-start vehicle-info-title'}).find_next_sibling('div').get_text().strip())
+                    case 'Km':
+                        oglas_det[7] = str(div.find('div', {'class' : 'col-6 d-inline-flex justify-content-start vehicle-info-title'}).find_next_sibling('div').get_text().replace(' km','').replace('.','').strip())
+                    case 'Godište':
+                        oglas_det[8] = str(div.find('div', {'class' : 'col-6 d-inline-flex justify-content-start vehicle-info-title'}).find_next_sibling('div').get_text().strip())
+                    case 'Snaga motora (kW)':
+                        oglas_det[9] = str(div.find('div', {'class' : 'col-6 d-inline-flex justify-content-start vehicle-info-title'}).find_next_sibling('div').get_text().strip().split(' ')[0])
+        
+        if soup.find('div', {'class' : 'col-6 d-inline-flex justify-content-start vehicle-info-title align-content-center'}) is not None:
+            oglas_det[10] = soup.find('div', {'class' : 'col-6 d-inline-flex justify-content-start vehicle-info-title align-content-center'}).find_next_sibling('div').get_text().strip()
         return oglas_det
-    except:
-        pass
 
 
 def oglasi():
@@ -97,7 +94,7 @@ def oglasi():
     print('Zadnja stranica pronađena: ' + str(last_page) + ' --> ' + datetime.now().strftime("%H:%M:%S") + ' h')
     
     URLs= []
-    for i in range (0, last_page + 1):
+    for i in range (1, last_page + 1):
         URLs.append('https://www.neostar.com/hr/buy-vehicle?year_from=2014&year_to=2022&sort=3&page=' + str(i))
     URLs2 = []
 
@@ -118,16 +115,15 @@ def oglasi():
             if br_oglasa == 1 or br_oglasa % 500 == 0: print('Oglas broj: ' + str(br_oglasa) + ' / ' + str(len(URLs2)) + ' --> ' + datetime.now().strftime("%H:%M") + ' h')
             br_oglasa += 1
 
-
-    #brišem starije od 6 mjeseci:
+    # čistim od neispravnih / praznih oglasa
     for ele in oglasi:
-        if len(ele[12].strip()) > 0 :
-            if date.today() - relativedelta(months = 6) > datetime.strptime(ele[12], '%d.%m.%Y').date():
-                oglasi.remove(ele)
+        if ele is None: 
+            oglasi.remove(ele)
+
 
     #upisujem podatke u Excel
-    with xlsxwriter.Workbook('Rabljeni_auti_Index.xlsx') as workbook:
-        worksheet = workbook.add_worksheet('Index')
+    with xlsxwriter.Workbook('Rabljeni_auti_Neostar.xlsx') as workbook:
+        worksheet = workbook.add_worksheet('Neostar')
 
         #dodajem zaglavlje
         worksheet.write(0, 0, 'oglasnik')

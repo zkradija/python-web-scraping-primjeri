@@ -43,7 +43,7 @@ for li in soup.find("ul", {'class': 'pagination'}).find_all("li"):
 
 
 URLs= []
-for i in range (0, last_page+1):
+for i in range (1, last_page+1):
     URLs.append('https://www.index.hr/oglasi/auto-moto/gid/27?&elementsNum=100&sortby=1&num=' + str(i))
 
 def parse(url):
