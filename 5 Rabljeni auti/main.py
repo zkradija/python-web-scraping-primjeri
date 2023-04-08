@@ -1,8 +1,5 @@
-import index, neostar, chiriboo
-
-
+import index, neostar
 
 if __name__ == '__main__':
-    #index.oglasi()
+    index.oglasi()
     neostar.oglasi()
-    #chiriboo.oglasi()

@@ -4,6 +4,7 @@ import xlsxwriter
 from bs4 import BeautifulSoup
 import requests
 from concurrent.futures import ProcessPoolExecutor, as_completed
+from openpyxl import load_workbook
 
 # vrijeme izvođenja --> 6 min
 # nema datuma objave pa ću staviti trenutni datum
@@ -83,6 +84,7 @@ def parse_oglas(url):
 
 
 def oglasi():
+    print ('Neostar')
     oglasi = []
     pocetak_vrijeme = time.time()
     last_page = 1
@@ -120,34 +122,19 @@ def oglasi():
         if ele is None: 
             oglasi.remove(ele)
 
+    wb = load_workbook(filename = './5 Rabljeni auti/Rabljeni_auti.xlsx')
+    sheet = wb.active
 
-    #upisujem podatke u Excel
-    with xlsxwriter.Workbook('Rabljeni_auti_Neostar.xlsx') as workbook:
-        worksheet = workbook.add_worksheet('Neostar')
+    for oglas in oglasi:
+        sheet.append(oglas)
 
-        #dodajem zaglavlje
-        worksheet.write(0, 0, 'oglasnik')
-        worksheet.write(0, 1, 'poveznica')
-        worksheet.write(0, 2, 'prodavac')
-        worksheet.write(0, 3, 'marka')
-        worksheet.write(0, 4, 'model')
-        worksheet.write(0, 5, 'tip')
-        worksheet.write(0, 6, 'motor')
-        worksheet.write(0, 7, 'kilometraza')
-        worksheet.write(0, 8, 'godina_proizvodnje')
-        worksheet.write(0, 9, 'snaga_motora_kW')
-        worksheet.write(0, 10, 'boja')
-        worksheet.write(0, 11, 'cijena')
-        worksheet.write(0, 12, 'datum_objave')
+    wb.save (filename = './5 Rabljeni auti/Rabljeni_auti.xlsx')
 
-        for row_num, oglasi in enumerate(oglasi):
-            worksheet.write_row(row_num+1, 0, oglasi)
-    
+   
     kraj_vrijeme = time.time()
     ukupno_vrijeme=kraj_vrijeme-pocetak_vrijeme
     print(str(ukupno_vrijeme) + ' sekundi')
 
 
 if __name__ == '__main__':
-    print ('Neostar')
     oglasi()

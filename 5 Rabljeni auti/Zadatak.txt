@@ -11,10 +11,7 @@ Svaki oglas mora ispuniti sljedeće uvjete - auto:
 Popis oglasnika / platofrmi:
 1. Index
 2. Neostar
-3. Chiriboo
-
-Njuškalo nećemo pratiti jer se većina oglasa nalazi i na Indexu. Naknadno ćemo dodavati autokuće, koje se nalaze na Njuškalu, a ne nalaze se na Indexu.
-Njušaklo ima dosta ograničenja i zaštita (bespotrebno - njuškalovci, ugledajte se na mobile.de !!!), čije zaobilaženje dosta usporava web scraping 
+3. DasWeltAuto
 
 Konačni podaci u Excel datoteci - moraju biti ovim redom, da se kasnije mogu lakše spojiti oglasnici, odnosno listovi u Excelu:
 1. oglasnik

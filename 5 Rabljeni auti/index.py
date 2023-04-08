@@ -1,14 +1,14 @@
 from datetime import date, datetime
 from dateutil.relativedelta import relativedelta
 import time
-import xlsxwriter
 from bs4 import BeautifulSoup
 import requests
 from concurrent.futures import ProcessPoolExecutor, as_completed
+import openpyxl
 
 
-# vrijeme izvođenja --> 9 min
-workers = 24    # obično se stavlja broj logičkih procesora. napomena: The number of workers must be less than or equal to 61 if Windows is your operating system.
+# vrijeme izvođenja --> 7 min
+workers = 30    # obično se stavlja broj logičkih procesora. napomena: The number of workers must be less than or equal to 61 if Windows is your operating system.
 time_sleep = 1
 
 
@@ -75,6 +75,7 @@ def parse_oglas(url):
         pass    
 
 def oglasi():
+    print ('Index')
     oglasi = []
     pocetak_vrijeme = time.time()
     last_page = 1
@@ -91,7 +92,7 @@ def oglasi():
     print('Zadnja stranica pronađena: ' + str(last_page) + ' --> ' + datetime.now().strftime("%H:%M:%S") + ' h')
     
     URLs= []
-    for i in range (0, last_page+1):
+    for i in range (0, last_page + 1):
         URLs.append('https://www.index.hr/oglasi/osobni-automobili/gid/27?pojam=&sortby=3&elementsNum=100&cijenaod=3500&attr_Int_179=2013&attr_Int_1190=2022&attr_Int_470=1&attr_Int_910=&attr_bit_349=1&attr_bit_350=1&attr_bit_351=1&vezani_na=179-1190_470-910_1172-1335_359-1192&num=' + str(i))
     URLs2 = []
 
@@ -119,32 +120,21 @@ def oglasi():
             if date.today() - relativedelta(months = 6) > datetime.strptime(ele[12], '%d.%m.%Y').date():
                 oglasi.remove(ele)
 
-    #upisujem podatke u Excel
-    with xlsxwriter.Workbook('Rabljeni_auti_Index.xlsx') as workbook:
-        worksheet = workbook.add_worksheet('Index')
 
-        #dodajem zaglavlje
-        worksheet.write(0, 0, 'oglasnik')
-        worksheet.write(0, 1, 'poveznica')
-        worksheet.write(0, 2, 'prodavac')
-        worksheet.write(0, 3, 'marka')
-        worksheet.write(0, 4, 'model')
-        worksheet.write(0, 5, 'tip')
-        worksheet.write(0, 6, 'motor')
-        worksheet.write(0, 7, 'kilometraza')
-        worksheet.write(0, 8, 'godina_proizvodnje')
-        worksheet.write(0, 9, 'snaga_motora_kW')
-        worksheet.write(0, 10, 'boja')
-        worksheet.write(0, 11, 'cijena')
-        worksheet.write(0, 12, 'datum_objave')
+    oglasi.insert(0, ['oglasnik','poveznica','prodavac','marka','model','tip','motor','godina_proizvodnje','snaga_motora','boja','cijena','datum_objave'])
 
-        for row_num, oglasi in enumerate(oglasi):
-            worksheet.write_row(row_num+1, 0, oglasi)
-    
+    wb = openpyxl.Workbook()
+    sheet = wb.active
+
+    for oglas in oglasi:
+        sheet.append(oglas)
+
+    wb.save (filename = './5 Rabljeni auti/Rabljeni_auti.xlsx')
+
+   
     kraj_vrijeme = time.time()
     ukupno_vrijeme=kraj_vrijeme-pocetak_vrijeme
     print(str(ukupno_vrijeme) + ' sekundi')
 
 if __name__ == '__main__':
-    print ('Index')
     oglasi()
