@@ -5,7 +5,7 @@ from bs4 import BeautifulSoup
 import requests
 from concurrent.futures import ProcessPoolExecutor, as_completed
 
-# vrijeme izvođenja --> 9 min
+# vrijeme izvođenja --> 6 min
 # nema datuma objave pa ću staviti trenutni datum
 
 
