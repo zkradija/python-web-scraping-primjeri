@@ -44,8 +44,8 @@ def parse_oglas(url):
     if soup.find('div', {'class' : 'vehicle-price-effective'}) is not None: 
         oglas_det[11] = int(re.sub('[^0-9\.]','', soup.find('div', {'class' : 'vehicle-price-effective'}).getText()).replace('.',''))
     oglas_det[12] = date.today().strftime('%d.%m.%Y')  # datum objave uvijek isti
-    oglas_det[3] = soup.find('div', {'class' : 'header'}).getText().strip().split()[0]    # marka
-    if len(soup.find('div', {'class' : 'header'}).getText().strip().split()) > 1 : oglas_det[4] = soup.find('div', {'class' : 'header'}).getText().strip().split()[1]    # model
+    if soup.find('div', {'class' : 'header'}) is not None: oglas_det[3] = soup.find('div', {'class' : 'header'}).getText().strip().split(' ')[0]    # marka
+    if len(soup.find('div', {'class' : 'header'}).getText().strip().split(' ')) > 1 : oglas_det[4] = soup.find('div', {'class' : 'header'}).getText().strip().split(' ')[1]    # model
     
     if soup.find('div', {'class' : 'sub-header'}) is not None: oglas_det[5] = soup.find('div', {'class' : 'sub-header'}).getText().strip() # tip
 
@@ -69,7 +69,7 @@ def oglasi():
     oglasi = []
     pocetak_vrijeme = time.time()
     last_page = 1
-    response = s.get('https://www.dasweltauto.hr/s?fromInitialRegistrationYear=2014&toInitialRegistrationYear=2022&pageSize=36&page=1',headers=headers)
+    response = s.get('https://www.dasweltauto.hr/s?fromInitialRegistrationYear=2013&toInitialRegistrationYear=2022&pageSize=36&page=1',headers=headers)
     web_page = response.content
     soup = BeautifulSoup(web_page, "html.parser")
 
@@ -78,7 +78,7 @@ def oglasi():
     
     URLs= []
     for i in range (1, last_page + 1):
-        URLs.append('https://www.dasweltauto.hr/s?fromInitialRegistrationYear=2014&toInitialRegistrationYear=2022&pageSize=36&page=' + str(i))
+        URLs.append('https://www.dasweltauto.hr/s?fromInitialRegistrationYear=2013&toInitialRegistrationYear=2022&pageSize=36&page=' + str(i))
     URLs2 = []
 
     # prvo parsiram url stranice na kojoj je popis sa po 100 oglasa

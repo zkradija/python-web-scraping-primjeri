@@ -89,7 +89,7 @@ def oglasi():
     oglasi = []
     pocetak_vrijeme = time.time()
     last_page = 1
-    response = s.get('https://www.neostar.com/hr/buy-vehicle?year_from=2014&year_to=2022&sort=3&page=1',headers=headers)
+    response = s.get('https://www.neostar.com/hr/buy-vehicle?year_from=2013&year_to=2022&sort=3&page=1',headers=headers)
     web_page = response.content
     soup = BeautifulSoup(web_page, "html.parser")
 
@@ -98,7 +98,7 @@ def oglasi():
     
     URLs= []
     for i in range (1, last_page + 1):
-        URLs.append('https://www.neostar.com/hr/buy-vehicle?year_from=2014&year_to=2022&sort=3&page=' + str(i))
+        URLs.append('https://www.neostar.com/hr/buy-vehicle?year_from=2013&year_to=2022&sort=3&page=' + str(i))
     URLs2 = []
 
     # prvo parsiram url stranice na kojoj je popis sa po 100 oglasa
