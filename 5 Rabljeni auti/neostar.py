@@ -15,9 +15,20 @@ workers = 30    # obično se stavlja broj logičkih procesora. napomena: The num
 time_sleep = 1
 
 
+# treba mi popis marki. radim global varijablu, da mogu koristiti u funkciji parse_oglas()
+global marka
+marka = []
+
 # identificiram se kao Firefox browser
 headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:66.0) Gecko/20100101 Firefox/111.0.1', 'Accept-Encoding': '*', 'Connection': 'keep-alive'}
 s = requests.Session()
+
+response = s.get('https://www.neostar.com/hr/buy-vehicle?year_from=2013&year_to=2022&sort=3&page=1',headers=headers)
+web_page = response.text
+soup = BeautifulSoup(web_page, "html.parser")
+
+for o in soup.find('select', {'id' : 'makeSelect'}).find_all('option'):
+    marka.append(o.getText().strip())
 
 def parse(url):
     time.sleep(time_sleep)
@@ -47,23 +58,14 @@ def parse_oglas(url):
     except:
         pass
     if soup.find('div', {'class' : 'vehicle-details-title pr-2'}) is not None:  # ovo stavljam za slučaj da neki oglas nestane u tijeku scrapanja
-        if soup.find('div', {'class' : 'vehicle-details-title pr-2'}).getText()[:9] == 'Alfa Romeo':
-            oglas_det[3] = 'Alfa Romeo'
-            model_txt_start = 10
-            model_txt_end = int(soup.find('div', {'class' : 'vehicle-details-title pr-2'}).getText().strip().find(',')) - 2
-            oglas_det[4] = soup.find('div', {'class' : 'vehicle-details-title pr-2'}).getText()[model_txt_start : model_txt_end]
-        elif soup.find('div', {'class' : 'vehicle-details-title pr-2'}).getText()[:9] == 'Land Rover':
-            oglas_det[3] = 'Land Rover'
-            model_txt_start = 10
-            model_txt_end = int(soup.find('div', {'class' : 'vehicle-details-title pr-2'}).getText().strip().find(',')) - 2
-            oglas_det[4] = soup.find('div', {'class' : 'vehicle-details-title pr-2'}).getText()[model_txt_start : model_txt_end]
-        else:
-            marka_txt_start = 0
-            marka_txt_end = int(soup.find('div', {'class' : 'vehicle-details-title pr-2'}).getText().strip().find(' '))
-            oglas_det[3] = soup.find('div', {'class' : 'vehicle-details-title pr-2'}).getText().strip()[marka_txt_start : marka_txt_end]    # marka
-            model_txt_start = int(soup.find('div', {'class' : 'vehicle-details-title pr-2'}).getText().strip().find(' ')) + 1 
-            model_txt_end = int(soup.find('div', {'class' : 'vehicle-details-title pr-2'}).getText().strip().find(',')) - 2 
-            oglas_det[4] = soup.find('div', {'class' : 'vehicle-details-title pr-2'}).getText().strip()[model_txt_start : model_txt_end]    # model
+        # nema zasebnog polja za marku i model pa ih moram izvlačiti. koristit ću marku iz padajućeg izbornika
+        for m in marka:
+            if m.lower() in soup.find('div', {'class' : 'vehicle-details-title pr-2'}).getText().strip().lower():   
+                oglas_det[3] = m    # marka
+                break
+
+        if oglas_det[3].lower() in soup.find('div', {'class' : 'vehicle-details-title pr-2'}).getText().strip().lower():    # model
+            oglas_det[4] = soup.find('div', {'class' : 'vehicle-details-title pr-2'}).getText().replace(oglas_det[3],'').split(',')[0].strip()
         # tip
         if soup.find('span', {'class' : 'text-center black-text vehicle-type'}) is not None: oglas_det[5] = soup.find('span', {'class' : 'text-center black-text vehicle-type'}).getText().strip()
 

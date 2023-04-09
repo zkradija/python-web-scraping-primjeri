@@ -13,22 +13,10 @@ import re
 workers = 30    # obično se stavlja broj logičkih procesora. napomena: The number of workers must be less than or equal to 61 if Windows is your operating system.
 time_sleep = 1
 
-# treba mi popis marki. radim global varijablu, da mogu koristiti u funkciji parse_oglas()
-global marka
-marka = []
 
 # identificiram se kao Firefox browser
 headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:66.0) Gecko/20100101 Firefox/111.0.1', 'Accept-Encoding': '*', 'Connection': 'keep-alive'}
 s = requests.Session()
-
-response = s.get('https://www.dasweltauto.hr/s?fromInitialRegistrationYear=2013&toInitialRegistrationYear=2022&pageSize=36&page=1',headers=headers)
-web_page = response.text
-soup = BeautifulSoup(web_page, "html.parser")
-
-for o in soup.find('select', {'id' : 'brand-select'}).find_all('option'):
-    marka.append(o.getText().split('(')[0].strip())
-
-
 
 def parse(url):
     time.sleep(time_sleep)
@@ -36,8 +24,8 @@ def parse(url):
     web_page = response.text
     soup = BeautifulSoup(web_page, "html.parser")
     oglasi = []
-    for div in soup.find_all('div', {'class': 'name'}):
-        link = 'https://www.dasweltauto.hr' + str(div.a['href']).strip().split('?')[0]
+    for div in soup.find_all('div', {'class': 'article-content'}):
+        link = 'https://www.trcz.hr' + str(div.a['href']).strip().split('?')[0]
         oglasi.append(link)
     return oglasi
 
@@ -49,23 +37,14 @@ def parse_oglas(url):
     web_page = response.content
     soup = BeautifulSoup(web_page, "html.parser")
     oglas_det = ['','','','','','','','','','','','',''] 
-    oglas_det[0] = 'DasWeltAuto'  # ime oglasnika
+    oglas_det[0] = 'TRCZ automobili'  # ime oglasnika
     oglas_det[1] = (str(url))   # poveznica
-    if soup.find('div', {'class' : 'dealer-name'}) is not None:  oglas_det[2] =  soup.find('div', {'class' : 'dealer-name'}).get_text().strip() # prodavač
-    if soup.find('div', {'class' : 'vehicle-price-effective'}) is not None: 
-        oglas_det[11] = int(re.sub('[^0-9\.]','', soup.find('div', {'class' : 'vehicle-price-effective'}).getText()).replace('.',''))
+    oglas_det[2] =  'TRCZ automobili' # prodavač
+    if soup.find('p', {'class' : 'price Eu-price'}) is not None: 
+        oglas_det[11] = float(soup.find('p', {'class' : 'price Eu-price'}).getText().strip().split(' ')[0].replace('.','').replace(',','.'))   # cijena
     oglas_det[12] = date.today().strftime('%d.%m.%Y')  # datum objave uvijek isti
-    
-    # nema zasebnog polja za marku i model pa ih moram izvlačiti. koristit ću marku iz padajućeg izbornika
-    if soup.find('div', {'class' : 'header'}) is not None: 
-        for m in marka:
-            if m.lower() in soup.find('div', {'class' : 'header'}).getText().strip().lower(): 
-                oglas_det[3] = m    # marka
-                break
-    
-    # sad izbijam model iz istog polja
-    if oglas_det[3].lower() in soup.find('div', {'class' : 'header'}).getText().strip().lower(): 
-        oglas_det[4] = soup.find('div', {'class' : 'header'}).getText().replace(oglas_det[3],'').strip()    # model
+    if soup.find('div', {'class' : 'header'}) is not None: oglas_det[3] = soup.find('div', {'class' : 'header'}).getText().strip().split(' ')[0]    # marka
+    if len(soup.find('div', {'class' : 'header'}).getText().strip().split(' ')) > 1 : oglas_det[4] = soup.find('div', {'class' : 'header'}).getText().strip().split(' ')[1]    # model
     
     if soup.find('div', {'class' : 'sub-header'}) is not None: oglas_det[5] = soup.find('div', {'class' : 'sub-header'}).getText().strip() # tip
 
@@ -85,20 +64,20 @@ def parse_oglas(url):
 
 
 def oglasi():
-    print ('DasWeltAuto')
+    print ('TRCZ automobili')
     oglasi = []
     pocetak_vrijeme = time.time()
     last_page = 1
-    response = s.get('https://www.dasweltauto.hr/s?fromInitialRegistrationYear=2013&toInitialRegistrationYear=2022&pageSize=36&page=1',headers=headers)
+    response = s.get('https://www.trcz.hr/rezultati-pretrage.aspx?searchparam=p5~2013_2022#',headers=headers)
     web_page = response.content
     soup = BeautifulSoup(web_page, "html.parser")
 
-    last_page = math.ceil(int(soup.find('span', {'id' : 'result-count'}).get_text().replace('.',''))/36)
+    last_page = math.ceil(int(soup.find('div', {'id' : 'articles-no'}).get_text().split(',')[0].split(':')[1].strip())/36)
     print('Zadnja stranica pronađena: ' + str(last_page) + ' --> ' + datetime.now().strftime("%H:%M:%S") + ' h')
     
-    URLs = []
+    URLs= []
     for i in range (1, last_page + 1):
-        URLs.append('https://www.dasweltauto.hr/s?fromInitialRegistrationYear=2013&toInitialRegistrationYear=2022&pageSize=36&page=' + str(i))
+        URLs.append('https://www.trcz.hr/rezultati-pretrage.aspx?searchparam=p5~2013_2022#'+ str(i) +' -10-6')
     URLs2 = []
 
     # prvo parsiram url stranice na kojoj je popis sa po 100 oglasa
