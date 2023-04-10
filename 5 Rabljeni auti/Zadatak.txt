@@ -1,4 +1,4 @@
-Zadatak je povući podatke sa više internet oglasnika. Svaki oglasnik treba imati svoj list u Excelu.
+Zadatak je povući podatke sa više internet oglasnika. Oglasi svih oglasnika idu u 1 list Excela.
 Svaki oglasnik mora imati svoju .py skriptu, koja se poziva iz main.py
 
 Svaki oglas mora ispuniti sljedeće uvjete - auto:
@@ -13,7 +13,7 @@ Popis oglasnika / platofrmi:
 2. Neostar
 3. DasWeltAuto
 4. TRCZ automobili
-5. Renault SELECTION / DACIA rabljena --> preskačemo jer 'Učitaj više' dugme na kraju stranice jako sporo učitava
+5. Renault SELECTION / DACIA rabljena --> preskačemo jer 'Učitaj više' dugme, na kraju stranice, jako sporo učitava
 6. AUTO HRVATSKA
 7. Autoto
 8. PSC Zagreb

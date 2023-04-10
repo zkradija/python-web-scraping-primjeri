@@ -5,34 +5,13 @@ import requests
 from concurrent.futures import ProcessPoolExecutor, as_completed
 from openpyxl import load_workbook
 import math
-
-from selenium import webdriver 
-from selenium.webdriver import Chrome 
-from selenium.webdriver.chrome.service import Service 
-from selenium.webdriver.common.by import By 
-from webdriver_manager.chrome import ChromeDriverManager
-
-
+import re
 
 # vrijeme izvođenja --> 1 min
 # nema datuma objave pa ću staviti trenutni datum
 
-# NAPOMENA - na ovoj stranici se mora isključiti javascript. inače se ne parsiraju dobro podaci (uvijek pasrira 1 stranicu !!!)
-# to rješavamo tako da isključimo javascriptu pomoću seleniuma pa tek onda vadimo podatke s BS
-
 workers = 30    # obično se stavlja broj logičkih procesora. napomena: The number of workers must be less than or equal to 61 if Windows is your operating system.
 time_sleep = 1
-
-
-options = webdriver.ChromeOptions() 
-options.add_argument('--headless')
-options.add_experimental_option( "prefs",{'profile.managed_default_content_settings.javascript': 2})
-options.page_load_strategy = 'none' 
-# this returns the path web driver downloaded 
-chrome_path = ChromeDriverManager().install() 
-chrome_service = Service(chrome_path) 
-# pass the defined options and service objects to initialize the web driver 
-driver = Chrome(options=options, service=chrome_service) 
 
 # identificiram se kao Firefox browser
 headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:66.0) Gecko/20100101 Firefox/111.0.1', 'Accept-Encoding': '*', 'Connection': 'keep-alive'}
@@ -40,13 +19,12 @@ s = requests.Session()
 
 
 def parse(url):
-
     time.sleep(time_sleep)
     response = s.get(url, headers=headers)
-    web_page = response.content
+    web_page = response.text
     soup = BeautifulSoup(web_page, "html.parser")
     oglasi = []
-    for div in soup.find_all('div', {'class': 'article-content'}):
+    for div in soup.find_all('div', {'class': 'article'}):
         link = 'https://www.trcz.hr' + str(div.a['href']).strip().split('?')[0]
         oglasi.append(link)
     return oglasi
@@ -94,22 +72,23 @@ def parse_oglas(url):
 
 
 def oglasi():
-    # provjera je li javascript isključen
-    # driver.get('https://www.whatismybrowser.com/detect/is-javascript-enabled') 
-    print ('TRCZ automobili')
+    print ('Auto Hrvatska')
     oglasi = []
     pocetak_vrijeme = time.time()
     last_page = 1
-    response = s.get('https://www.trcz.hr/rabljena-vozila-3.aspx?page=1',headers=headers)
+    
+    last_page = math.ceil(int(soup.find('', {'class' : 'tid-pg-9'}).get_text().strip())/36)
+    url = 
+    response = s.get('https://rabljena.autohrvatska.hr/rezultati-pretrage.aspx?uid=HjEbL0OA159&size=all',headers=headers)
     web_page = response.content
     soup = BeautifulSoup(web_page, "html.parser")
-
-    last_page = math.ceil(int(soup.find('div', {'id' : 'articles-no'}).get_text().split(',')[0].split(':')[1].strip())/12)
-    print('Zadnja stranica pronađena: ' + str(last_page) + ' --> ' + datetime.now().strftime("%H:%M:%S") + ' h')
+   
+    #ne treba izračun last_page jer ima opcija za prikaz svih oglasa
+    print('Zadnja stranica pronađena: ' + str(1) + ' --> ' + datetime.now().strftime("%H:%M:%S") + ' h')
     
     URLs = []
     for i in range (1, last_page + 1):
-        URLs.append('https://www.trcz.hr/rabljena-vozila-3.aspx?page=' + str(i))
+        URLs.append('https://rabljena.autohrvatska.hr/rezultati-pretrage.aspx?uid=HjEbL0OA159&page=' + str(i))
     URLs2 = []
 
     # prvo parsiram url stranice na kojoj je popis sa po 100 oglasa
@@ -117,7 +96,7 @@ def oglasi():
         futures = [ executor.submit(parse, url) for url in URLs ]
         for result in as_completed(futures):
             for oglas in result.result():
-                 URLs2.append(oglas)
+                URLs2.append(oglas)
         print('Zaglavlja oglasa napunjena: ' + datetime.now().strftime("%H:%M:%S") + ' h')
 
     br_oglasa=1
@@ -129,11 +108,9 @@ def oglasi():
             if br_oglasa == 1 or br_oglasa % 500 == 0: print('Oglas broj: ' + str(br_oglasa) + ' / ' + str(len(URLs2)) + ' --> ' + datetime.now().strftime("%H:%M") + ' h')
             br_oglasa += 1
 
-    driver.quit()
-
-    # preventivno čistim ako ima neispravnih / praznih oglasa, te starijih od 2013 godine
+    # preventivno čistim ako ima neispravnih / praznih oglasa
     for ele in oglasi:
-        if ele is None or ele[8] < 2013: 
+        if ele is None: 
             oglasi.remove(ele)
 
     wb = load_workbook(filename = './5 Rabljeni auti/Rabljeni_auti.xlsx')
