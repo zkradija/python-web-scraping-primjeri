@@ -122,7 +122,7 @@ def oglasi():
                 oglasi.remove(ele)
 
 
-    oglasi.insert(0, ['oglasnik','poveznica','prodavac','marka','model','tip','motor','godina_proizvodnje','snaga_motora','boja','cijena','datum_objave'])
+    oglasi.insert(0, ['oglasnik','poveznica','prodavac','marka','model','tip','motor','kilometraza','godina_proizvodnje','snaga_motora','boja','cijena','datum_objave'])
 
     wb = openpyxl.Workbook()
     sheet = wb.active
