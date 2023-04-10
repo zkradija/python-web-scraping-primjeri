@@ -75,11 +75,11 @@ def parse_oglas(url):
                     case 'Vrsta goriva':
                         oglas_det[6] = str(div.find('div', {'class' : 'col-6 d-inline-flex justify-content-start vehicle-info-title'}).find_next_sibling('div').get_text().strip())
                     case 'Km':
-                        oglas_det[7] = str(div.find('div', {'class' : 'col-6 d-inline-flex justify-content-start vehicle-info-title'}).find_next_sibling('div').get_text().replace(' km','').replace('.','').strip())
+                        oglas_det[7] = int(str(div.find('div', {'class' : 'col-6 d-inline-flex justify-content-start vehicle-info-title'}).find_next_sibling('div').get_text().replace(' km','').replace('.','').strip()))
                     case 'Godište':
-                        oglas_det[8] = str(div.find('div', {'class' : 'col-6 d-inline-flex justify-content-start vehicle-info-title'}).find_next_sibling('div').get_text().strip())
+                        oglas_det[8] = int(str(div.find('div', {'class' : 'col-6 d-inline-flex justify-content-start vehicle-info-title'}).find_next_sibling('div').get_text().strip()))
                     case 'Snaga motora (kW)':
-                        oglas_det[9] = str(div.find('div', {'class' : 'col-6 d-inline-flex justify-content-start vehicle-info-title'}).find_next_sibling('div').get_text().strip().split(' ')[0])
+                        oglas_det[9] = int(str(div.find('div', {'class' : 'col-6 d-inline-flex justify-content-start vehicle-info-title'}).find_next_sibling('div').get_text().strip().split(' ')[0]))
         
         if soup.find('div', {'class' : 'col-6 d-inline-flex justify-content-start vehicle-info-title align-content-center'}) is not None:
             oglas_det[10] = soup.find('div', {'class' : 'col-6 d-inline-flex justify-content-start vehicle-info-title align-content-center'}).find_next_sibling('div').get_text().strip()

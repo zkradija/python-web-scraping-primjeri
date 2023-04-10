@@ -74,11 +74,11 @@ def parse_oglas(url):
             case 'Vrsta goriva':
                 oglas_det[6] = str(li.find('span').get_text().strip())
             case 'Stanje km':
-                oglas_det[7] = int(li.find('span').get_text().split(' ')[0].strip().replace('.',''))
+                if li.find('span').get_text().split(' ')[0].strip().replace('.','').isdigit(): oglas_det[7] = int(li.find('span').get_text().split(' ')[0].strip().replace('.',''))
             case 'Prva reg.':
-                oglas_det[8] = int(str(li.find('span').get_text().strip())[-4:])
+                if str(li.find('span').get_text().strip())[-4:].isdigit(): oglas_det[8] = int(str(li.find('span').get_text().strip())[-4:])
             case 'Snaga':
-                oglas_det[9] = int(li.find('span').get_text().split(' ')[0].strip())
+                if li.find('span').get_text().split(' ')[0].strip().isdigit(): oglas_det[9] = int(li.find('span').get_text().split(' ')[0].strip())
             case 'Boja':
                     oglas_det[10] = str(li.find('span').get_text().strip())
     return oglas_det

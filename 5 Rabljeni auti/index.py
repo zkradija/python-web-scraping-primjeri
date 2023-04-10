@@ -8,7 +8,7 @@ import openpyxl
 import math
 
 
-# vrijeme izvođenja --> 7 min
+# vrijeme izvođenja --> 8 min
 workers = 30    # obično se stavlja broj logičkih procesora. napomena: The number of workers must be less than or equal to 61 if Windows is your operating system.
 time_sleep = 1
 
@@ -63,11 +63,11 @@ def parse_oglas(url):
                     case 'Motor':
                         oglas_det[6] = str(li.find_next_sibling('li').get_text()).replace('\r','').replace('\n','')
                     case 'Prijeđeni kilometri':
-                        oglas_det[7] = str(li.find_next_sibling('li').get_text()).replace('\r','').replace('\n','').replace('.',''  ).replace(',','')
+                        oglas_det[7] = int(str(li.find_next_sibling('li').get_text()).replace('\r','').replace('\n','').replace('.',''  ).replace(',',''))
                     case 'Godina proizvodnje':
-                        oglas_det[8] = str(li.find_next_sibling('li').get_text()).replace('\r','').replace('\n','')
+                        oglas_det[8] = int(str(li.find_next_sibling('li').get_text()).replace('\r','').replace('\n',''))
                     case 'Snaga motora kW':
-                        oglas_det[9] = str(li.find_next_sibling('li').get_text()).replace('\r','').replace('\n','')
+                        oglas_det[9] = int(str(li.find_next_sibling('li').get_text()).replace('.','').replace(',','').replace('\r','').replace('\n',''))
                     case 'Boja vozila':
                         oglas_det[10] = str(li.find_next_sibling('li').get_text()).replace('\r','').replace('\n','')
         return oglas_det
@@ -79,7 +79,7 @@ def oglasi():
     oglasi = []
     pocetak_vrijeme = time.time()
     last_page = 1
-    response = s.get('https://www.index.hr/oglasi/osobni-automobili/gid/27?pojam=&sortby=3&elementsNum=100&cijenaod=3500&attr_Int_179=2013&attr_Int_1190=2022&attr_Int_470=1&attr_Int_910=&attr_bit_349=1&attr_bit_350=1&attr_bit_351=1&vezani_na=179-1190_470-910_1172-1335_359-1192&num=1',headers=headers)
+    response = s.get('https://www.index.hr/oglasi/osobni-automobili/gid/27?pojamZup=-2&tipoglasa=1&sortby=1&elementsNum=100&grad=0&naselje=0&cijenaod=3500&cijenado=49000000&attr_Int_179=2013&attr_Int_1190=2022&attr_Int_470=1&vezani_na=179-1190_470-910_1172-1335_359-1192&num=1',headers=headers)
     web_page = response.content
     soup = BeautifulSoup(web_page, "html.parser")
 
@@ -93,7 +93,7 @@ def oglasi():
     
     URLs= []
     for i in range (0, last_page + 1):
-        URLs.append('https://www.index.hr/oglasi/osobni-automobili/gid/27?pojam=&sortby=3&elementsNum=100&cijenaod=3500&attr_Int_179=2013&attr_Int_1190=2022&attr_Int_470=1&attr_Int_910=&attr_bit_349=1&attr_bit_350=1&attr_bit_351=1&vezani_na=179-1190_470-910_1172-1335_359-1192&num=' + str(i))
+        URLs.append('https://www.index.hr/oglasi/osobni-automobili/gid/27?pojamZup=-2&tipoglasa=1&sortby=1&elementsNum=100&grad=0&naselje=0&cijenaod=3500&cijenado=49000000&attr_Int_179=2013&attr_Int_1190=2022&attr_Int_470=1&vezani_na=179-1190_470-910_1172-1335_359-1192&num=' + str(i))
     URLs2 = []
 
     # prvo parsiram url stranice na kojoj je popis sa po 100 oglasa
@@ -114,11 +114,10 @@ def oglasi():
             br_oglasa += 1
 
 
-    # mičem starije oglase + oglase od Auto Mall Kia Osijek, jer ću njih zasebno prikazati. Prilikom izrade oglasa većinom nisu stavljali marku i model pa ih je filter izbacio van n aIndexu. 
-    # Bolje onda full maknuti s Indexa, i zasebno ih scrapati
+    # mičem starije oglase
     for ele in oglasi:
         if len(ele[12].strip()) > 0 :
-            if date.today() - relativedelta(months = 6) > datetime.strptime(ele[12], '%d.%m.%Y').date() or ele[2] == 'Auto Mall':
+            if date.today() - relativedelta(months = 6) > datetime.strptime(ele[12], '%d.%m.%Y').date():
                 oglasi.remove(ele)
 
 
