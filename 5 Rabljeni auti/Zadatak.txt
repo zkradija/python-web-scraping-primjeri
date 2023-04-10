@@ -12,8 +12,8 @@ Popis oglasnika / platofrmi:
 1. Index
 2. Neostar
 3. DasWeltAuto
-4. rabljenavozila.renault.hr
-5. TRCZ automobili
+4. TRCZ automobili
+5. Renault SELECTION / DACIA rabljena --> preskačemo jer 'Učitaj više' dugme na kraju stranice jako sporo učitava
 6. AUTO HRVATSKA
 7. Autoto
 8. PSC Zagreb
