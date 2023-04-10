@@ -17,6 +17,7 @@ Popis oglasnika / platofrmi:
 6. AUTO HRVATSKA
 7. Autoto
 8. PSC Zagreb
+9. Kia Auto Mall
 
 Konačni podaci u Excel datoteci - moraju biti ovim redom, da se kasnije mogu lakše spojiti oglasnici, odnosno listovi u Excelu:
 1. oglasnik

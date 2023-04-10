@@ -69,7 +69,6 @@ def oglasi():
     #ne treba izračun last_page jer ima opcija za prikaz svih oglasa
     print('Zadnja stranica pronađena: ' + str(1) + ' --> ' + datetime.now().strftime("%H:%M:%S") + ' h')
     
-    URLs = ['https://rabljena.autohrvatska.hr/rezultati-pretrage.aspx?uid=HjEbL0OA159&size=all']
     URLs2 = []
 
     for h2 in soup.find('div', {'class' : 'row cf'}).find_all('h2', {'class' : 'car-title'}):
