@@ -18,18 +18,6 @@ headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:66.0) Gec
 s = requests.Session()
 
 
-def parse(url):
-    time.sleep(time_sleep)
-    response = s.get(url, headers=headers)
-    web_page = response.text
-    soup = BeautifulSoup(web_page, "html.parser")
-    oglasi = []
-    for div in soup.find_all('div', {'class': 'article'}):
-        link = 'https://www.trcz.hr' + str(div.a['href']).strip().split('?')[0]
-        oglasi.append(link)
-    return oglasi
-
-
 def parse_oglas(url):
     #kreće otvaranje oglasa 1 po 1
     time.sleep(time_sleep)
@@ -37,37 +25,34 @@ def parse_oglas(url):
     web_page = response.content
     soup = BeautifulSoup(web_page, "html.parser")
     oglas_det = ['','','','','','','','','','','','',''] 
-    oglas_det[0] = 'TRCZ automobili'  # ime oglasnika
+    oglas_det[0] = 'Auto Hrvatska'  # ime oglasnika
     oglas_det[1] = (str(url))   # poveznica
-    oglas_det[2] =  'TRCZ automobili'  # prodavač
-    if soup.find('p', {'class' : 'price Eu-price'}) is not None: 
-        oglas_det[11] = float(soup.find('p', {'class' : 'price Eu-price'}).getText().split(' €')[0].strip().replace('.','').replace(',','.'))   # cijena
+    oglas_det[2] =  'Auto Hrvatska'  # prodavač
+    if soup.find('span', {'class' : 'full-price Eu-price'}) is not None: 
+        oglas_det[11] = float(soup.find('span', {'class' : 'full-price Eu-price'}).getText().split(' €')[0].strip().replace('.','').replace(',','.'))   # cijena
     oglas_det[12] = date.today().strftime('%d.%m.%Y')  # datum objave uvijek isti
-    if soup.find('li', {'class' : 'main-item on'}).find('ul').find('li', {'class' : 'on'}) is not None: 
-        oglas_det[3] = soup.find('li', {'class' : 'main-item on'}).find('ul').find('li', {'class' : 'on'}).getText().strip()  # marka
-    if soup.find('ul', {'id' : 'articlesMenu'}).find('li', {'class' : 'on'}) is not None: 
-        oglas_det[4] = soup.find('ul', {'id' : 'articlesMenu'}).find('li', {'class' : 'on'}).getText().split('(')[0].strip()     # model
         
-    # da dobijem tip, izbijam i marku i model
-    if soup.find('div', {'id' : 'article-header'}).find('h1') is not None: 
-        ime_auta = soup.find('div', {'id' : 'article-header'}).find('h1').getText()
-        marka_auta = oglas_det[3]
-        model_auta = oglas_det[4]
-        if marka_auta in ime_auta: ime_auta_bez_marke = ime_auta.replace(marka_auta,'')
-        if model_auta in ime_auta_bez_marke: oglas_det[5] = ime_auta_bez_marke.replace(model_auta,'').strip()    # tip
-
-    for tr in soup.find('div', {'id' : 'article-details'}).find_all('tr'):
-        match tr.find('th').getText().strip():
+    for li in soup.find('ul', {'class' : 'col-one'}).find_all('li'):
+        match li.find('span', {'class', 'description'}).getText().strip():
+            case 'Marka vozila:':
+                oglas_det[3] = li.find('span', {'class' : 'value'}).getText().strip().title()
+            case 'Model:':
+                oglas_det[4] = li.find('span', {'class' : 'value'}).getText().strip().title()
+            case 'Motor:':
+                oglas_det[5] = li.find('span', {'class' : 'value'}).getText().strip()
             case 'Vrsta motora:':
-                oglas_det[6] = str(tr.find('td').get_text().strip())
+                oglas_det[6] = li.find('span', {'class' : 'value'}).getText().strip().title()
             case 'Kilometraža:':
-                oglas_det[7] = int(tr.find('td').get_text().split(' ')[0].strip().replace('.',''))
+                oglas_det[7] = int(li.find('span', {'class' : 'value'}).getText().replace(' km','').strip().replace('.',''))
             case 'Godina proizvodnje:':
-                oglas_det[8] = int(tr.find('td').get_text().strip())
-            case 'Snaga vozila:':
-                oglas_det[9] = int(tr.find('td').get_text().split(' ')[0].strip())
-            case 'Boja vozila:':
-                oglas_det[10] = str(tr.find('td').get_text().strip())
+                oglas_det[8] = int(li.find('span', {'class' : 'value'}).getText().strip()[:4])
+            case 'Snaga motora:':
+                oglas_det[9] = int(li.find('span', {'class' : 'value'}).getText().strip().split(' ')[0].strip())
+    for li in soup.find('ul', {'class' : 'col-two'}).find_all('li'):
+        match li.find('span', {'class', 'description'}).getText().strip():
+            case 'Boja:':
+                oglas_det[10] = li.find('span', {'class' : 'value'}).getText().strip().title()
+                break
     return oglas_det
 
 
@@ -75,10 +60,8 @@ def oglasi():
     print ('Auto Hrvatska')
     oglasi = []
     pocetak_vrijeme = time.time()
-    last_page = 1
     
-    last_page = math.ceil(int(soup.find('', {'class' : 'tid-pg-9'}).get_text().strip())/36)
-    url = 
+
     response = s.get('https://rabljena.autohrvatska.hr/rezultati-pretrage.aspx?uid=HjEbL0OA159&size=all',headers=headers)
     web_page = response.content
     soup = BeautifulSoup(web_page, "html.parser")
@@ -86,18 +69,13 @@ def oglasi():
     #ne treba izračun last_page jer ima opcija za prikaz svih oglasa
     print('Zadnja stranica pronađena: ' + str(1) + ' --> ' + datetime.now().strftime("%H:%M:%S") + ' h')
     
-    URLs = []
-    for i in range (1, last_page + 1):
-        URLs.append('https://rabljena.autohrvatska.hr/rezultati-pretrage.aspx?uid=HjEbL0OA159&page=' + str(i))
+    URLs = ['https://rabljena.autohrvatska.hr/rezultati-pretrage.aspx?uid=HjEbL0OA159&size=all']
     URLs2 = []
 
-    # prvo parsiram url stranice na kojoj je popis sa po 100 oglasa
-    with ProcessPoolExecutor(max_workers=workers) as executor:
-        futures = [ executor.submit(parse, url) for url in URLs ]
-        for result in as_completed(futures):
-            for oglas in result.result():
-                URLs2.append(oglas)
-        print('Zaglavlja oglasa napunjena: ' + datetime.now().strftime("%H:%M:%S") + ' h')
+    for h2 in soup.find('div', {'class' : 'row cf'}).find_all('h2', {'class' : 'car-title'}):
+        URLs2.append('https://rabljena.autohrvatska.hr/' + h2.a['href'])
+    
+    print('Zaglavlja oglasa napunjena: ' + datetime.now().strftime("%H:%M:%S") + ' h')
 
     br_oglasa=1
     # sad parsiram stranicu pojedinačnog oglasa
@@ -124,7 +102,7 @@ def oglasi():
    
     kraj_vrijeme = time.time()
     ukupno_vrijeme=kraj_vrijeme-pocetak_vrijeme
-    print('TRCZ automobili: ' + str(round(ukupno_vrijeme,0)) + ' sekundi')
+    print('Auto Hrvatska: ' + str(round(ukupno_vrijeme,0)) + ' sekundi')
 
 if __name__ == '__main__':
     oglasi()
