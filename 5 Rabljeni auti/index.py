@@ -41,13 +41,12 @@ def parse_oglas(url):
     oglas_det = ['','','','','','','','','','','','','']   
     oglas_det[0] = 'Index'  # ime oglasnika
     oglas_det[1] = (str(url))   #poveznica
-    if soup.find('a', {'class' : 'oglasKorisnickoIme'}) is not None : oglas_det[2] = soup.find('a', {'class' : 'oglasKorisnickoIme'}).get_text() # prodavač
+    if soup.find('a', {'class' : 'oglasKorisnickoIme'}) is not None : oglas_det[2] = soup.find('a', {'class' : 'oglasKorisnickoIme'}).get_text().strip() # prodavač
     try: 
         if soup.find('div', {'class' : 'price'}) is not None: oglas_det[11] = int(str(soup.find('div', {'class' : 'price'}).find('span').get_text()).replace(' €', '').replace('.',''  ).replace(',',''))   #cijena 
         datum_objave_str_start = int(str(soup.find('div', {'class' : 'published'})).find('Objava: ')) + 8
         datum_objave_str_end = int(str(soup.find('div', {'class' : 'published'})).find('Objava: ')) + 18
         if soup.find('div', {'class' : 'published'}) is not None: oglas_det[12] = str(soup.find('div', {'class' : 'published'}))[datum_objave_str_start : datum_objave_str_end]  #datum objave, 
-          
     except:
         pass
     try:
@@ -115,10 +114,11 @@ def oglasi():
             br_oglasa += 1
 
 
-    #brišem starije od 6 mjeseci:
+    # mičem starije oglase + oglase od Auto Mall Kia Osijek, jer ću njih zasebno prikazati. Prilikom izrade oglasa većinom nisu stavljali marku i model pa ih je filter izbacio van n aIndexu. 
+    # Bolje onda full maknuti s Indexa, i zasebno ih scrapati
     for ele in oglasi:
         if len(ele[12].strip()) > 0 :
-            if date.today() - relativedelta(months = 6) > datetime.strptime(ele[12], '%d.%m.%Y').date():
+            if date.today() - relativedelta(months = 6) > datetime.strptime(ele[12], '%d.%m.%Y').date() or ele[2] == 'Auto Mall':
                 oglasi.remove(ele)
 
 
