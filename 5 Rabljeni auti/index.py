@@ -7,11 +7,11 @@ from concurrent.futures import ProcessPoolExecutor, as_completed
 import openpyxl
 
 
-# vrijeme izvođenja --> 8 min sa workers = 30
+# vrijeme izvođenja -->  24 min sa workers = 30
 
 
 # identificiram se kao Firefox browser
-headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:66.0) Gecko/20100101 Firefox/111.0.1', 'Accept-Encoding': '*', 'Connection': 'keep-alive'}
+headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.5112.79 Safari/537.36', 'Accept-Encoding': '*', 'Connection': 'keep-alive'}
 s = requests.Session()
 
 
@@ -30,7 +30,6 @@ def parse(url):
 
 def parse_oglas(url):
     #kreće otvaranje oglasa 1 po 1
-    #time.sleep(time_sleep)
     response = s.get(url, headers=headers)
     web_page = response.content
     soup = BeautifulSoup(web_page, "html.parser")
@@ -69,9 +68,13 @@ def parse_oglas(url):
         
         # provjeravam jesu li marka i model prazni - postoji bug na indexovoj stranici - nakon refreshanja stranice misteriozno nestanu marka i model
         # taj bug ću zaobići čitanjem marke i modela iz breadcrumba
-        if oglas_det[3] == '': oglas_det[3] = soup.find('ul', {'id':'bread'}).find_all('li')[3].get_text().strip()
-        if oglas_det[4] == '': oglas_det[4] = soup.find('ul', {'id':'bread'}).find_all('li')[4].get_text().strip()
-
+        try:
+            if soup.find('ul', {'id':'bread'}).find_all('li') is not None:  # ovo ubacujem za slučaj da je oglas u međuvremenu obrisan
+                if len(soup.find('ul', {'id':'bread'}).find_all('li')) > 4 :
+                    if oglas_det[3] == '': oglas_det[3] = soup.find('ul', {'id':'bread'}).find_all('li')[3].get_text().strip()
+                    if oglas_det[4] == '': oglas_det[4] = soup.find('ul', {'id':'bread'}).find_all('li')[4].get_text().strip()
+        except:
+            pass
         return oglas_det
     except:
         pass    

@@ -30,9 +30,11 @@ chrome_path = ChromeDriverManager().install()
 chrome_service = Service(chrome_path) 
 # pass the defined options and service objects to initialize the web driver 
 driver = Chrome(options=options, service=chrome_service) 
+driver.close() 
+driver.quit()
 
 # identificiram se kao Firefox browser
-headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:66.0) Gecko/20100101 Firefox/111.0.1', 'Accept-Encoding': '*', 'Connection': 'keep-alive'}
+headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.5112.79 Safari/537.36', 'Accept-Encoding': '*', 'Connection': 'keep-alive'}
 s = requests.Session()
 
 
@@ -135,13 +137,13 @@ def oglasi(w, t):
         if ele is None or ele[8] < 2013: 
             oglasi.remove(ele)
 
-    wb = load_workbook(filename = './5 Rabljeni auti/Rabljeni_auti.xlsx')
+    wb = load_workbook(filename = './Rabljeni_auti.xlsx')
     sheet = wb.active
 
     for oglas in oglasi:
         sheet.append(oglas)
 
-    wb.save (filename = './5 Rabljeni auti/Rabljeni_auti.xlsx')
+    wb.save (filename = './Rabljeni_auti.xlsx')
 
    
     kraj_vrijeme = time.time()

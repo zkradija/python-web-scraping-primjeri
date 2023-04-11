@@ -14,7 +14,7 @@ global marka
 marka = []
 
 # identificiram se kao Firefox browser
-headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:66.0) Gecko/20100101 Firefox/111.0.1', 'Accept-Encoding': '*', 'Connection': 'keep-alive'}
+headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.5112.79 Safari/537.36', 'Accept-Encoding': '*', 'Connection': 'keep-alive'}
 s = requests.Session()
 
 response = s.get('https://www.neostar.com/hr/buy-vehicle?year_from=2013&year_to=2022&sort=3&page=1',headers=headers)
