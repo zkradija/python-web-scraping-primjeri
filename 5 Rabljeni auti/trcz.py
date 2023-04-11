@@ -20,9 +20,6 @@ from webdriver_manager.chrome import ChromeDriverManager
 # NAPOMENA - na ovoj stranici se mora isključiti javascript. inače se ne parsiraju dobro podaci (uvijek pasrira 1 stranicu !!!)
 # to rješavamo tako da isključimo javascriptu pomoću seleniuma pa tek onda vadimo podatke s BS
 
-workers = 30    # obično se stavlja broj logičkih procesora. napomena: The number of workers must be less than or equal to 61 if Windows is your operating system.
-time_sleep = 1
-
 
 options = webdriver.ChromeOptions() 
 options.add_argument('--headless')
@@ -41,7 +38,6 @@ s = requests.Session()
 
 def parse(url):
 
-    time.sleep(time_sleep)
     response = s.get(url, headers=headers)
     web_page = response.content
     soup = BeautifulSoup(web_page, "html.parser")
@@ -54,7 +50,6 @@ def parse(url):
 
 def parse_oglas(url):
     #kreće otvaranje oglasa 1 po 1
-    time.sleep(time_sleep)
     response = s.get(url, headers=headers)
     web_page = response.content
     soup = BeautifulSoup(web_page, "html.parser")
@@ -93,7 +88,9 @@ def parse_oglas(url):
     return oglas_det
 
 
-def oglasi():
+def oglasi(w, t):
+    workers=w
+    time_sleep=t
     # provjera je li javascript isključen
     # driver.get('https://www.whatismybrowser.com/detect/is-javascript-enabled') 
     print ('TRCZ automobili')
@@ -117,7 +114,8 @@ def oglasi():
         futures = [ executor.submit(parse, url) for url in URLs ]
         for result in as_completed(futures):
             for oglas in result.result():
-                 URLs2.append(oglas)
+                URLs2.append(oglas)
+                time.sleep(time_sleep/5)                 
         print('Zaglavlja oglasa napunjena: ' + datetime.now().strftime("%H:%M:%S") + ' h')
 
     br_oglasa=1
@@ -126,6 +124,7 @@ def oglasi():
         futures = [ executor.submit(parse_oglas, url) for url in URLs2]
         for result in as_completed(futures):
             oglasi.append(result.result())
+            time.sleep(time_sleep)            
             if br_oglasa == 1 or br_oglasa % 500 == 0: print('Oglas broj: ' + str(br_oglasa) + ' / ' + str(len(URLs2)) + ' --> ' + datetime.now().strftime("%H:%M") + ' h')
             br_oglasa += 1
 

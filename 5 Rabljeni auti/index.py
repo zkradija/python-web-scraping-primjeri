@@ -5,12 +5,9 @@ from bs4 import BeautifulSoup
 import requests
 from concurrent.futures import ProcessPoolExecutor, as_completed
 import openpyxl
-import math
 
 
-# vrijeme izvođenja --> 8 min
-workers = 30    # obično se stavlja broj logičkih procesora. napomena: The number of workers must be less than or equal to 61 if Windows is your operating system.
-time_sleep = 1
+# vrijeme izvođenja --> 8 min sa workers = 30
 
 
 # identificiram se kao Firefox browser
@@ -20,7 +17,6 @@ s = requests.Session()
 
 
 def parse(url):
-    time.sleep(time_sleep)
     response = s.get(url, headers=headers)
     web_page = response.text
     soup = BeautifulSoup(web_page, "html.parser")
@@ -34,7 +30,7 @@ def parse(url):
 
 def parse_oglas(url):
     #kreće otvaranje oglasa 1 po 1
-    time.sleep(time_sleep)
+    #time.sleep(time_sleep)
     response = s.get(url, headers=headers)
     web_page = response.content
     soup = BeautifulSoup(web_page, "html.parser")
@@ -70,11 +66,19 @@ def parse_oglas(url):
                         oglas_det[9] = int(str(li.find_next_sibling('li').get_text()).replace('.','').replace(',','').replace('\r','').replace('\n',''))
                     case 'Boja vozila':
                         oglas_det[10] = str(li.find_next_sibling('li').get_text()).replace('\r','').replace('\n','')
+        
+        # provjeravam jesu li marka i model prazni - postoji bug na indexovoj stranici - nakon refreshanja stranice misteriozno nestanu marka i model
+        # taj bug ću zaobići čitanjem marke i modela iz breadcrumba
+        if oglas_det[3] == '': oglas_det[3] = soup.find('ul', {'id':'bread'}).find_all('li')[3].get_text().strip()
+        if oglas_det[4] == '': oglas_det[4] = soup.find('ul', {'id':'bread'}).find_all('li')[4].get_text().strip()
+
         return oglas_det
     except:
         pass    
 
-def oglasi():
+def oglasi(w, t):
+    workers=w
+    time_sleep=t
     print ('Index')
     oglasi = []
     pocetak_vrijeme = time.time()
@@ -92,7 +96,7 @@ def oglasi():
     print('Zadnja stranica pronađena: ' + str(last_page) + ' --> ' + datetime.now().strftime("%H:%M:%S") + ' h')
     
     URLs= []
-    for i in range (0, last_page + 1):
+    for i in range (1, last_page + 1):
         URLs.append('https://www.index.hr/oglasi/osobni-automobili/gid/27?pojamZup=-2&tipoglasa=1&sortby=1&elementsNum=100&grad=0&naselje=0&cijenaod=3500&cijenado=49000000&attr_Int_179=2013&attr_Int_1190=2022&attr_Int_470=1&vezani_na=179-1190_470-910_1172-1335_359-1192&num=' + str(i))
     URLs2 = []
 
@@ -102,6 +106,7 @@ def oglasi():
         for result in as_completed(futures):
             for oglas in result.result():
                 URLs2.append(oglas)
+                time.sleep(time_sleep/5)
         print('Zaglavlja oglasa napunjena: ' + datetime.now().strftime("%H:%M:%S") + ' h')
 
     br_oglasa=1
@@ -110,8 +115,15 @@ def oglasi():
         futures = [ executor.submit(parse_oglas, url) for url in URLs2]
         for result in as_completed(futures):
             oglasi.append(result.result())
+            time.sleep(time_sleep)
             if br_oglasa == 1 or br_oglasa % 500 == 0: print('Oglas broj: ' + str(br_oglasa) + ' / ' + str(len(URLs2)) + ' --> ' + datetime.now().strftime("%H:%M") + ' h')
             br_oglasa += 1
+
+    # čistim od neispravnih / praznih oglasa
+    for ele in oglasi:
+        if ele is None: 
+            oglasi.remove(ele)
+
 
 
     # mičem starije oglase
@@ -129,7 +141,7 @@ def oglasi():
     for oglas in oglasi:
         sheet.append(oglas)
 
-    wb.save (filename = './5 Rabljeni auti/Rabljeni_auti.xlsx')
+    wb.save (filename = './Rabljeni_auti.xlsx')
 
    
     kraj_vrijeme = time.time()

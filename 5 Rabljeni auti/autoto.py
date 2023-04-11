@@ -8,9 +8,6 @@ from openpyxl import load_workbook
 # vrijeme izvođenja --> 1 min
 # nema datuma objave pa ću staviti trenutni datum
 
-workers = 30    # obično se stavlja broj logičkih procesora. napomena: The number of workers must be less than or equal to 61 if Windows is your operating system.
-time_sleep = 1
-
 # treba mi popis marki i modela. radim global varijablu, da mogu koristiti u funkciji parse_oglas()
 global marka
 marka = []
@@ -47,7 +44,6 @@ for o in soup.find('select', {'id' : 'select-catalogFilterSection-BrandAndModel'
 
 def parse_oglas(url):
     #kreće otvaranje oglasa 1 po 1
-    time.sleep(time_sleep)
     response = s.get(url, headers=headers)
     web_page = response.content
     soup = BeautifulSoup(web_page, "html.parser")
@@ -93,7 +89,9 @@ def parse_oglas(url):
     return oglas_det
 
 
-def oglasi():
+def oglasi(w, t):
+    workers=w
+    time_sleep=t
     print ('Autoto')
     oglasi = []
     pocetak_vrijeme = time.time()
@@ -118,6 +116,8 @@ def oglasi():
         futures = [ executor.submit(parse_oglas, url) for url in URLs2]
         for result in as_completed(futures):
             oglasi.append(result.result())
+            time.sleep(time_sleep)
+
             if br_oglasa == 1 or br_oglasa % 500 == 0: print('Oglas broj: ' + str(br_oglasa) + ' / ' + str(len(URLs2)) + ' --> ' + datetime.now().strftime("%H:%M") + ' h')
             br_oglasa += 1
 
@@ -126,13 +126,13 @@ def oglasi():
         if ele is None: 
             oglasi.remove(ele)
 
-    wb = load_workbook(filename = './5 Rabljeni auti/Rabljeni_auti.xlsx')
+    wb = load_workbook(filename = './Rabljeni_auti.xlsx')
     sheet = wb.active
 
     for oglas in oglasi:
         sheet.append(oglas)
 
-    wb.save (filename = './5 Rabljeni auti/Rabljeni_auti.xlsx')
+    wb.save (filename = './Rabljeni_auti.xlsx')
 
    
     kraj_vrijeme = time.time()
