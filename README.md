@@ -10,4 +10,4 @@ Primjeri su poredani po težini:
 - oglasi za rabljene električne automobile, sa stranice https://njuskalo.hr
 - oglasi za rabljene automobile, sa raznih oglasnika, portala, platformi...
 
-Za više info: zkradija@proton.me
+Info: zkradija@proton.me
