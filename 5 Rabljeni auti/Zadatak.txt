@@ -19,7 +19,7 @@ Popis oglasnika / platofrmi:
 8. PSC Zagreb
 
 
-Konačni podaci u Excel datoteci - moraju biti ovim redom, da se kasnije mogu lakše spojiti oglasnici, odnosno listovi u Excelu:
+Konačni podaci u Excel datoteci - moraju biti ovim redom, da se kasnije mogu lakše spojiti oglasnici:
 1. oglasnik
 2. poveznica
 3. prodavač

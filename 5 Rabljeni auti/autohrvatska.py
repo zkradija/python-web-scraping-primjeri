@@ -8,7 +8,7 @@ from openpyxl import load_workbook
 # vrijeme izvođenja --> 1 min
 # nema datuma objave pa ću staviti trenutni datum
 
-# identificiram se kao Firefox browser
+# identificiram se kao Chrome browser
 headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.5112.79 Safari/537.36', 'Accept-Encoding': '*', 'Connection': 'keep-alive'}
 s = requests.Session()
 
