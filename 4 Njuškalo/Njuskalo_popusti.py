@@ -23,7 +23,7 @@ kategorija = []
 kategorija_dict = {}
 
 
-pocetak_vrijeme = time.time()
+start_time = time.time()
 s = requests.Session()
 
 response = s.get('https://popusti.njuskalo.hr/', headers=headers)
@@ -151,6 +151,6 @@ with xlsxwriter.Workbook('Njuskalo_popusti.xlsx') as workbook:
     for row_num, proizvodi in enumerate(proizvodi):
         worksheet.write_row(row_num, 0, proizvodi)
 
-kraj_vrijeme = time.time()
-ukupno_vrijeme=kraj_vrijeme-pocetak_vrijeme
-print(ukupno_vrijeme)
+end_time = time.time()
+elapsed_time = int(end_time) - int(start_time)
+print(elapsed_time)

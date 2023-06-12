@@ -84,7 +84,7 @@ def oglasi(w, t):
     time_sleep=t
     print ('Index')
     oglasi = []
-    pocetak_vrijeme = time.time()
+    start_time = time.time()
     last_page = 1
     response = s.get('https://www.index.hr/oglasi/osobni-automobili/gid/27?pojamZup=-2&tipoglasa=1&sortby=1&elementsNum=100&grad=0&naselje=0&cijenaod=3500&cijenado=49000000&attr_Int_179=2013&attr_Int_1190=2022&attr_Int_470=1&vezani_na=179-1190_470-910_1172-1335_359-1192&num=1',headers=headers)
     web_page = response.content
@@ -147,9 +147,9 @@ def oglasi(w, t):
     wb.save (filename = './Rabljeni_auti.xlsx')
 
    
-    kraj_vrijeme = time.time()
-    ukupno_vrijeme=kraj_vrijeme-pocetak_vrijeme
-    print('Index: ' + str(round(ukupno_vrijeme,0)) + ' sekundi')
+    end_time = time.time()
+    elapsed_time = int(end_time) - int(start_time)
+    print('Index: ' + str(round(elapsed_time,0)) + ' sekundi')
 
 if __name__ == '__main__':
     oglasi()

@@ -22,7 +22,7 @@ options = Options()
 options.page_load_strategy = 'eager'    # čekam da se učitaju DOM lementi, ne zanima me ništa drugo
 
 
-pocetak_vrijeme = time.time()
+start_time = time.time()
 
 
 url = url_baza + str(1)
@@ -95,6 +95,6 @@ with xlsxwriter.Workbook('Njuskalo_auti.xlsx') as workbook:
         worksheet.write_row(row_num, 0, oglasi)
 
 
-kraj_vrijeme = time.time()
-ukupno_vrijeme=kraj_vrijeme-pocetak_vrijeme
-print(ukupno_vrijeme)
+end_time = time.time()
+elapsed_time = int(end_time) - int(start_time)
+print(elapsed_time)

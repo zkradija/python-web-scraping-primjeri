@@ -55,7 +55,7 @@ def oglasi(w, t):
     time_sleep=t
     print ('Auto Hrvatska')
     oglasi = []
-    pocetak_vrijeme = time.time()
+    start_time = time.time()
     
 
     response = s.get('https://rabljena.autohrvatska.hr/rezultati-pretrage.aspx?uid=HjEbL0OA159&size=all',headers=headers)
@@ -96,9 +96,9 @@ def oglasi(w, t):
     wb.save (filename = './Rabljeni_auti.xlsx')
 
    
-    kraj_vrijeme = time.time()
-    ukupno_vrijeme=kraj_vrijeme-pocetak_vrijeme
-    print('Auto Hrvatska: ' + str(round(ukupno_vrijeme,0)) + ' sekundi')
+    end_time = time.time()
+    elapsed_time = int(end_time) - int(start_time)
+    print('Auto Hrvatska: ' + str(round(elapsed_time,0)) + ' sekundi')
 
 if __name__ == '__main__':
     oglasi()

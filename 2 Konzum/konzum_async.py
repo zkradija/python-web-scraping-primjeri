@@ -6,8 +6,8 @@ from concurrent.futures import ProcessPoolExecutor, as_completed
 
 # zadatak: sa internet stranice https://Konzum.hr skinuti sve proizvode s pripadajućim cijenama
 # cijene ćemo preuzeti sa stranice kategorija, gdje su navedeni proizvodi pojedine kategorije. ne treba otvarati stranicu pojedinačnog proizvoda
-# sada koristim asinkroni način rada, točnije koristiti ću 12 radnika (testno računalo ima Amd 3600 6 jezgri sa 12 logičkih procesora)
-# cca 5x brže radi nego verzija bez ProcessPoolExecutor. može i brže, ali onda se aktivira DDoS zaštita na serveru. zato usporavam sa time.sleep(1)
+# sada koristim asinkroni način rada, točnije koristiti ću 12 radnika (testno računalo: Amd 3600 6 jezgri sa 12 logičkih procesora)
+# cca 4x brže radi nego verzija bez ProcessPoolExecutor. može i brže, ali onda se aktivira DDoS zaštita na serveru. zato usporavam sa time.sleep(1)
 
 
 workers = 12    # obično se stavlja broj logičkih procesora. napomena: The number of workers must be less than or equal to 61 if Windows is your operating system.
@@ -19,10 +19,10 @@ headers = {
     "Accept-Encoding": "*",
     "Connection": "keep-alive"}
 
-data=[]
-kategorija = []
+products = []
+categories = []
 
-pocetak_vrijeme = time.time()
+start_time = time.time()
 s = requests.Session()
 
 response = s.get('https://www.konzum.hr/kreni-u-kupnju', headers=headers)
@@ -30,78 +30,79 @@ web_page = response.content
 soup = BeautifulSoup(web_page, 'html.parser')
 
 for a in soup.find_all('a', {'class': 'category-box__link'}):
-    kat1 = []
+    cat1 = []
     if str(a['href']).startswith('/web/'):
-        kat1.append('https://konzum.hr' + a['href'])
-        kat1.append(str(a.find('h3', {'class':'category-box__title'}).get_text()))
-        kat1.append('1')
-        kategorija.append(kat1)
+        cat1.append(f'https://konzum.hr{a["href"]}')
+        cat1.append(f'{a.find("h3", {"class": "category-box__title"}).get_text()}')
+        cat1.append('1')
+        categories.append(cat1)
 
 
 #sada tražim kategorije po nivoima  - znam da ima max 3 lvla (nav-child-wrap-level-3)
 #prvo idem nivo 2
 for ul in soup.find_all('ul', {'class' : 'nav-child-wrap-level-2'}):
-    kat2 = []
-    kat2.append ('https://konzum.hr' + ul.a['href'])
-    kat2.append (str(ul.a.get_text()).strip())
-    kat2.append ('2')
-    kategorija.append(kat2)
+    cat2 = []
+    cat2.append (f'https://konzum.hr{ul.a["href"]}')
+    cat2.append (str(ul.a.get_text()).strip())
+    cat2.append ('2')
+    categories.append(cat2)
 
 #a onda nivo 3    
 for ul in soup.find_all('ul', {'class' : 'nav-child-wrap-level-3'}):
     for li in ul.find_all('li'):
-        kat3 = []
+        cat3 = []
         if li.a is not None:
-            kat3.append ('https://konzum.hr' + li.a['href'])
-            kat3.append (str(li.a.get_text()).strip())
-            kat3.append('3')
-            kategorija.append(kat3)
+            cat3.append (f'https://konzum.hr{li.a["href"]}')
+            cat3.append (str(li.a.get_text()).strip())
+            cat3.append('3')
+            categories.append(cat3)
 
 # sortiram - priprema za brisanje nadkategorija
-kategorija.sort(key=lambda x: x[0])
+categories.sort(key=lambda x: x[0])
 
 
-#čistim kategorije od glavnih kategorija. zanimaju me samo najniži nivoi
-i=0
-br=len(kategorija)-1
-while br>0:
-    x = str(kategorija[i][0])
-    x_kat=int(kategorija[i][2])
-    y = str(kategorija[i+1][0])
+# čistim kategorije od glavnih kategorija. zanimaju me samo najniži nivoi
+i = 0
+br = len(categories) - 1
+while br > 0:
+    x = str(categories[i][0])
+    x_kat = int(categories[i][2])
+    y = str(categories[i+1][0])
 
     if y.startswith(x) and x_kat == 1: 
-        del kategorija[i]
+        del categories[i]
     else:
         i+=1
     br-=1
 
-#print('Kategorije pronađene: ' + time.strftime('%H:%M:%S') + ' h')
+# print('Kategorije pronađene: ' + time.strftime('%H:%M:%S') + ' h')
 
 #brojac koristim radi izračuna brzine
-brojac=1
+brojac = 1
 
-#krećem listanje proizvoda po kategorijama
-#print('Proizvod broj ' + str(brojac) + ' u ' + str(time.strftime("%H:%M:%S", t)))
+# krećem listanje proizvoda po kategorijama
+# print('Proizvod broj ' + str(brojac) + ' u ' + str(time.strftime("%H:%M:%S", t)))
 
-URLs = kategorija
+URLs = categories
 
 def parse(url):
-    time.sleep(time_sleep) #moram ubaciti da se na serveru ne bi uključila zaštita za DDoS napad
+    time.sleep(time_sleep) # moram ubaciti da se na serveru ne bi uključila zaštita za DDoS napad
     response = s.get(url[0], headers=headers)
     web_page = response.content
     only_article_tags=SoupStrainer('article')   #gledam samo article, radi ubrzanja
     soup = BeautifulSoup(web_page, 'html.parser', parse_only=only_article_tags)
-    proizvodi = []
+    products_cat = []
     for article in soup.find_all('article'):
-        proizvod = []
         if article is not None: 
-            proizvod.append ('https://konzum.hr' + str(article.find('a', {'class' : 'link-to-product'})['href']))
-            proizvod.append (url[1])
-            proizvod.append (str(article.div.attrs['data-ga-id']))
-            proizvod.append (str(article.div.attrs['data-ga-name']))
-            proizvod.append (float(article.div.attrs['data-ga-price'].replace(" €","").replace(",",".")))    #prvo mičem oznaku €, zatim pretvaram decimalni zarez u točku, da bi na kraju pretvorio u broj
-            proizvodi.append(proizvod)
-    return proizvodi
+            product = [
+                f'https://konzum.hr{article.find("a", {"class" : "link-to-product"})["href"]}',
+                url[1],
+                str(article.div.attrs['data-ga-id']),
+                str(article.div.attrs['data-ga-name']),
+                float(article.div.attrs['data-ga-price'].replace(' €','').replace(',','.'))
+            ]
+            products_cat.append(product)
+    return products_cat
 
 
     
@@ -109,17 +110,17 @@ if __name__ == '__main__':
     with ProcessPoolExecutor(max_workers=workers) as executor:
         futures = [ executor.submit(parse, url) for url in URLs ]
         for result in as_completed(futures):
-            data.extend(result.result())
+            products.extend(result.result())
 
 
 
         # #ubacujem nazive stupaca, radi prebacivanja u Excel
-    data.insert(0, ['poveznica','kategorija','sifra','naziv','cijena_EUR_kom'])
-    with xlsxwriter.Workbook('Konzum_async.xlsx') as workbook:
+    products.insert(0, ['poveznica','kategorija','sifra','naziv','cijena_EUR_kom'])
+    with xlsxwriter.Workbook('./2 Konzum/Konzum_async.xlsx') as workbook:
         worksheet = workbook.add_worksheet()
-        for row_num, data in enumerate(data):
-            worksheet.write_row(row_num, 0, data)
+        for row_num, products in enumerate(products):
+            worksheet.write_row(row_num, 0, products)
 
-    kraj_vrijeme = time.time()
-    ukupno_vrijeme=kraj_vrijeme-pocetak_vrijeme
-    print(ukupno_vrijeme)
+    end_time = time.time()
+    elapsed_time = int(end_time) - int(start_time)
+    print(elapsed_time)

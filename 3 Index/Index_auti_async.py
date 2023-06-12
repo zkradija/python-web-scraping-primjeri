@@ -25,7 +25,7 @@ headers = {
     "Accept-Encoding": "*",
     "Connection": "keep-alive"}
 
-pocetak_vrijeme = time.time()
+start_time = time.time()
 s = requests.Session()
 
 response = s.get('https://www.index.hr/oglasi/auto-moto/gid/27?&elementsNum=100&sortby=1&num=1',headers=headers)
@@ -221,6 +221,6 @@ if __name__ == '__main__':
         for row_num, data_det in enumerate(data_det):
             worksheet.write_row(row_num+1, 0, data_det)
     
-    kraj_vrijeme = time.time()
-    ukupno_vrijeme=kraj_vrijeme-pocetak_vrijeme
-    print(str(ukupno_vrijeme) + ' sekundi')
+    end_time = time.time()
+    elapsed_time = int(end_time) - int(start_time)
+    print(str(elapsed_time) + ' sekundi')

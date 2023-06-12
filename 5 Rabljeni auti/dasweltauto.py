@@ -85,7 +85,7 @@ def oglasi(w, t):
     time_sleep=t
     print ('DasWeltAuto')
     oglasi = []
-    pocetak_vrijeme = time.time()
+    start_time = time.time()
     last_page = 1
     response = s.get('https://www.dasweltauto.hr/s?fromInitialRegistrationYear=2013&toInitialRegistrationYear=2022&pageSize=36&page=1',headers=headers)
     web_page = response.content
@@ -132,9 +132,9 @@ def oglasi(w, t):
     wb.save (filename = './Rabljeni_auti.xlsx')
 
    
-    kraj_vrijeme = time.time()
-    ukupno_vrijeme=kraj_vrijeme-pocetak_vrijeme
-    print('DasWeltAuto: ' + str(round(ukupno_vrijeme,0)) + ' sekundi')
+    end_time = time.time()
+    elapsed_time = int(end_time) - int(start_time)
+    print('DasWeltAuto: ' + str(round(elapsed_time,0)) + ' sekundi')
 
 if __name__ == '__main__':
     oglasi()

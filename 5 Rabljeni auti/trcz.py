@@ -97,7 +97,7 @@ def oglasi(w, t):
     # driver.get('https://www.whatismybrowser.com/detect/is-javascript-enabled') 
     print ('TRCZ automobili')
     oglasi = []
-    pocetak_vrijeme = time.time()
+    start_time = time.time()
     last_page = 1
     response = s.get('https://www.trcz.hr/rabljena-vozila-3.aspx?page=1',headers=headers)
     web_page = response.content
@@ -146,9 +146,9 @@ def oglasi(w, t):
     wb.save (filename = './Rabljeni_auti.xlsx')
 
    
-    kraj_vrijeme = time.time()
-    ukupno_vrijeme=kraj_vrijeme-pocetak_vrijeme
-    print('TRCZ automobili: ' + str(round(ukupno_vrijeme,0)) + ' sekundi')
+    end_time = time.time()
+    elapsed_time = int(end_time) - int(start_time)
+    print('TRCZ automobili: ' + str(round(elapsed_time,0)) + ' sekundi')
 
 if __name__ == '__main__':
     oglasi()

@@ -83,7 +83,7 @@ def oglasi(w, t):
     time_sleep=t
     print ('Neostar')
     oglasi = []
-    pocetak_vrijeme = time.time()
+    start_time = time.time()
     last_page = 1
     response = s.get('https://www.neostar.com/hr/buy-vehicle?year_from=2013&year_to=2022&sort=3&page=1',headers=headers)
     web_page = response.content
@@ -130,9 +130,9 @@ def oglasi(w, t):
     wb.save (filename = './Rabljeni_auti.xlsx')
 
    
-    kraj_vrijeme = time.time()
-    ukupno_vrijeme=kraj_vrijeme-pocetak_vrijeme
-    print('Neostar: ' + str(round(ukupno_vrijeme,0)) + ' sekundi')
+    end_time = time.time()
+    elapsed_time = int(end_time) - int(start_time)
+    print('Neostar: ' + str(round(elapsed_time,0)) + ' sekundi')
 
 
 if __name__ == '__main__':
