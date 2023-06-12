@@ -50,7 +50,7 @@ for i in range (1, last_page+1):
 # rješavam se praznih polja
 data2 = [x for x in data if x]
 
-with xlsxwriter.Workbook('Poštanski_brojevi_html.xlsx') as workbook:
+with xlsxwriter.Workbook('./1 Pošta/Poštanski_brojevi_html.xlsx') as workbook:
     worksheet = workbook.add_worksheet()
     worksheet.write(0, 0, 'mjesto')
     worksheet.write(0, 1, 'postanski_ured')
